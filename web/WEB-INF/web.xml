@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="6.0" xmlns="https://jakarta.ee/xml/ns/jakartaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd">
+    <servlet>
+        <servlet-name>PublisherController</servlet-name>
+        <servlet-class>Controllers.PublisherController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>BookController</servlet-name>
+        <servlet-class>Controllers.BookController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>AuthorController</servlet-name>
+        <servlet-class>Controllers.AuthorController</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>PublisherController</servlet-name>
+        <url-pattern>/Publisher</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>BookController</servlet-name>
+        <url-pattern>/Book</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>AuthorController</servlet-name>
+        <url-pattern>/Author</url-pattern>
+    </servlet-mapping>
+</web-app>
