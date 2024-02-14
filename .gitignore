@@ -9,7 +9,7 @@
 *.rar
 
 config/
-lib/
+/lib/
 nbproject/private/
 build/
 nbbuild/

@@ -12,6 +12,10 @@
         <servlet-name>AuthorController</servlet-name>
         <servlet-class>Controllers.AuthorController</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>ProductController</servlet-name>
+        <servlet-class>Controllers.ProductController</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>PublisherController</servlet-name>
         <url-pattern>/Publisher</url-pattern>
@@ -23,5 +27,9 @@
     <servlet-mapping>
         <servlet-name>AuthorController</servlet-name>
         <url-pattern>/Author</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ProductController</servlet-name>
+        <url-pattern>/Product</url-pattern>
     </servlet-mapping>
 </web-app>
