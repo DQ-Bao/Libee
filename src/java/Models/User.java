@@ -9,19 +9,17 @@ public class User {
     private String lastName;
     private List<Role> roles;
     private String email;
-    private String password;
     private LocalDateTime createdDate;
 
     public User() {
     }
 
-    public User(int id, String firstName, String lastName, List<Role> roles, String email, String password, LocalDateTime createdDate) {
+    public User(int id, String firstName, String lastName, List<Role> roles, String email, LocalDateTime createdDate) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.roles = roles;
         this.email = email;
-        this.password = password;
         this.createdDate = createdDate;
     }
 
@@ -63,14 +61,6 @@ public class User {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     public LocalDateTime getCreatedDate() {

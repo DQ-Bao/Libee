@@ -94,8 +94,21 @@
                                 <jsp:invoke fragment="nav"/>
                             </div>
                             <div class="navbar-nav ml-auto py-0">
-                                <a href="" class="nav-item nav-link">Login</a>
-                                <a href="" class="nav-item nav-link">Register</a>
+                                <c:choose>
+                                    <c:when test="${empty sessionScope.user}">
+                                        <a href="${pageContext.request.contextPath}/Login" class="nav-item nav-link">Login</a>
+                                        <a href="${pageContext.request.contextPath}/Register" class="nav-item nav-link">Register</a>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <div class="nav-item dropdown">
+                                            <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">${sessionScope.user.firstName} ${sessionScope.user.lastName}</a>
+                                            <div class="dropdown-menu rounded-0 m-0">
+                                                <a href="${pageContext.request.contextPath}/User?id=${sessionScope.user.id}" class="dropdown-item">Account</a>
+                                                <a href="${pageContext.request.contextPath}/Logout" class="dropdown-item">Logout</a>
+                                            </div>
+                                        </div>
+                                    </c:otherwise>
+                                </c:choose>
                             </div>
                         </div>
                     </nav>

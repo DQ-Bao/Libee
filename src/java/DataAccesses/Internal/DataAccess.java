@@ -12,7 +12,7 @@ public class DataAccess {
         }
         try {
             Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
-            conn = DriverManager.getConnection("jdbc:sqlserver://localhost:1433;databaseName=Libee;", "sa", "sa");
+            conn = DriverManager.getConnection("jdbc:sqlserver://localhost:1433;databaseName=Libee;encrypt=false;trustServerCertificate=true;", "sa", "sa");
         } catch (ClassNotFoundException | SQLException e) {
             e.printStackTrace();
         }

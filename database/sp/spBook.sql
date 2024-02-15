@@ -7,7 +7,17 @@ begin
 	from Product as p 
 	join Book as b on p.[Id] = b.[ProductId]
 	join Category as c on p.[CategoryId] = c.[Id]
-	join Publisher as pub on b.[PublisherId] = pub.[Id]
+	join Publisher as pub on b.[PublisherId] = pub.[Id];
+	
+	select b.[ProductId] as BookId, sc.[Id] as SubCategoryId, sc.[Name], bhsc.[Primary]
+	from Book as b
+	join BookHasSubCategory as bhsc on b.[ProductId] = bhsc.[BookId]
+	join SubCategory as sc on bhsc.[SubCategoryId] = sc.[Id];
+	
+	select b.[ProductId] as BookId, a.[Id] as AuthorId, a.[Name], a.[Description], a.[ImagePath]
+	from Book as b
+	join AuthorOfBook as aob on b.[ProductId] = aob.[BookId]
+	join Author as a on aob.[AuthorId] = a.[Id];
 end
 go
 
