@@ -25,7 +25,7 @@ public class LoginController extends HttpServlet {
             resp.sendRedirect(req.getContextPath());
         }
         else {
-            req.getRequestDispatcher("Views/Login.jsp").forward(req, resp);
+            req.getRequestDispatcher("WEB-INF/Views/Login.jsp").forward(req, resp);
         }
     }
 
@@ -37,7 +37,7 @@ public class LoginController extends HttpServlet {
         User user = dao.login(email, password);
         if (user == null) {
             req.setAttribute("message", "Login Failed!");
-            req.getRequestDispatcher("Views/Login.jsp").forward(req, resp);
+            req.getRequestDispatcher("WEB-INF/Views/Login.jsp").forward(req, resp);
         }
         else {
             req.getSession().setAttribute("user", user);

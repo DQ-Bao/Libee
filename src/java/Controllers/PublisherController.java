@@ -1,5 +1,6 @@
 package Controllers;
 
+import Annotations.Authorize;
 import Models.Publisher;
 import Services.PublisherService;
 import java.util.List;
@@ -10,6 +11,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+@Authorize({"Admin", "Customer"})
 public class PublisherController extends HttpServlet {  
     private PublisherService service;
 
@@ -36,7 +38,7 @@ public class PublisherController extends HttpServlet {
         }
         List<Publisher> publishers = service.getAll();
         req.setAttribute("publishers", publishers);
-        req.getRequestDispatcher("Views/Publisher.jsp").forward(req, res);
+        req.getRequestDispatcher("WEB-INF/Views/Publisher.jsp").forward(req, res);
     }
 
     @Override

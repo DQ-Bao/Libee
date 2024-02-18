@@ -25,7 +25,7 @@ public class RegisterController extends HttpServlet {
             resp.sendRedirect(req.getContextPath());
         }
         else {
-            req.getRequestDispatcher("Views/Register.jsp").forward(req, resp);
+            req.getRequestDispatcher("WEB-INF/Views/Register.jsp").forward(req, resp);
         }
     }
 
@@ -39,7 +39,7 @@ public class RegisterController extends HttpServlet {
         boolean success = dao.register(firstName, lastName, email, password);
         if (!success) {
             req.setAttribute("message", "Register Failed!");
-            req.getRequestDispatcher("Views/Register.jsp").forward(req, resp);
+            req.getRequestDispatcher("WEB-INF/Views/Register.jsp").forward(req, resp);
         }
         else {
             resp.sendRedirect(req.getContextPath() + "/Login");

@@ -23,6 +23,6 @@ public class ProductController extends HttpServlet {
     throws ServletException, IOException {
         List<Product> list = dao.getAll();
         request.setAttribute("product_list", list);
-        request.getRequestDispatcher("Views/ProductDisplay.jsp").forward(request, response);
+        request.getRequestDispatcher("WEB-INF/Views/ProductDisplay.jsp").forward(request, response);
     }
 }
