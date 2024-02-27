@@ -17,6 +17,38 @@ public class AuthorOfBook {
         this.authorImagePath = authorImagePath;
         this.authorDescription = authorDescription;
     }
+    
+    public AuthorOfBook(AuthorOfBookBuilder builder) {
+        this.bookId = builder.bookId;
+        this.authorId = builder.authorId;
+        this.authorName = builder.authorName;
+        this.authorImagePath = builder.authorImagePath;
+        this.authorDescription = builder.authorDescription;
+    }
+    
+    public static AuthorOfBookBuilder getBuilder() {
+        return new AuthorOfBookBuilder();
+    }
+    
+    public static class AuthorOfBookBuilder {
+        private int bookId;
+        private int authorId;
+        private String authorName;
+        private String authorImagePath;
+        private String authorDescription;
+
+        private AuthorOfBookBuilder() {
+        }
+        
+        public AuthorOfBookBuilder BookId(int bookId) { this.bookId = bookId; return this; }
+        public AuthorOfBookBuilder AuthorId(int authorId) { this.authorId = authorId; return this; }
+        public AuthorOfBookBuilder AuthorName(String authorName) { this.authorName = authorName; return this; }
+        public AuthorOfBookBuilder AuthorImagePath(String authorImagePath) { this.authorImagePath = authorImagePath; return this; }
+        public AuthorOfBookBuilder AuthorDescription(String authorDescription) { this.authorDescription = authorDescription; return this; }
+        public AuthorOfBook Build() {
+            return new AuthorOfBook(this);
+        }
+    }
 
     public int getBookId() {
         return bookId;

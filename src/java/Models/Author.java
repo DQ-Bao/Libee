@@ -16,6 +16,35 @@ public class Author {
         this.description = description;
     }
     
+    public Author(AuthorBuilder builder) {
+        this.id = builder.id;
+        this.name = builder.name;
+        this.imagePath = builder.imagePath;
+        this.description = builder.description;
+    }
+    
+    public static AuthorBuilder getBuilder() {
+        return new AuthorBuilder();
+    }
+    
+    public static class AuthorBuilder {
+        private int id;
+        private String name;
+        private String imagePath;
+        private String description;
+        
+        private AuthorBuilder() {
+        }
+        
+        public AuthorBuilder Id(int id) { this.id = id; return this; }
+        public AuthorBuilder Name(String name) { this.name = name; return this; }
+        public AuthorBuilder ImagePath(String imagePath) { this.imagePath = imagePath; return this; }
+        public AuthorBuilder Description(String description) { this.description = description; return this; }
+        public Author Build() {
+            return new Author(this);
+        }
+    }
+    
     public int getId() {
         return id;
     }

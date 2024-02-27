@@ -12,6 +12,29 @@ public class Publisher {
         this.name = name;
     }
     
+    public Publisher(PublisherBuilder builder) {
+        this.id = builder.id;
+        this.name = builder.name;
+    }
+    
+    public static PublisherBuilder getBuilder() {
+        return new PublisherBuilder();
+    }
+    
+    public static class PublisherBuilder {
+        private int id;
+        private String name;
+
+        private PublisherBuilder() {
+        }
+        
+        public PublisherBuilder Id(int id) { this.id = id; return this; }
+        public PublisherBuilder Name(String name) { this.name = name; return this; }
+        public Publisher Build() {
+            return new Publisher(this);
+        }
+    }
+    
     public int getId() {
         return id;
     }
