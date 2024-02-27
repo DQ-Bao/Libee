@@ -14,10 +14,9 @@ import jakarta.servlet.http.HttpSession;
 import java.lang.reflect.Method;
 
 public class AuthorizationFilter implements Filter {
-
     public AuthorizationFilter() {
     }
-
+    
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) 
             throws IOException, ServletException {
@@ -39,7 +38,7 @@ public class AuthorizationFilter implements Filter {
             authorize = hasAuthorizedRole(user, classAnno);
             if (authorize) {
                 String method = "do" + req.getMethod().substring(0, 1).toUpperCase() + req.getMethod().substring(1).toLowerCase();
-                Method[] methods = servletClass.getMethods();
+                Method[] methods = servletClass.getDeclaredMethods();
                 for (int i = 0; i < methods.length; i++) {
                     if (methods[i].getName().equals(method)) {
                         Authorize methodAnno = methods[i].getAnnotation(Authorize.class);
@@ -56,7 +55,7 @@ public class AuthorizationFilter implements Filter {
             chain.doFilter(request, response);
         }
         else {
-            resp.sendError(403);
+            resp.sendRedirect(req.getContextPath() + "/Login");
         }
     }
     
