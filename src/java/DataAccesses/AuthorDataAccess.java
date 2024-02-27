@@ -5,8 +5,6 @@ import Models.AuthorOfBook;
 import DataAccesses.Internal.DataAccess;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Date;
-import java.sql.Connection;
 import java.sql.CallableStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -22,6 +20,25 @@ public class AuthorDataAccess {
     }
     
     private AuthorDataAccess() {
+    }
+    
+    public List<Author> getAll() {
+        String sp = "{call spAuthor_GetAll}";
+        List<Author> authors = new ArrayList<>();
+        try (CallableStatement statement = DataAccess.getConnection().prepareCall(sp)) {
+            statement.execute();
+            ResultSet res = statement.getResultSet();
+            while (res.next()) {
+                int id = res.getInt("Id");
+                String name = res.getString("Name");
+                String description = res.getString("Description");
+                String imagePath = res.getString("ImagePath");
+                authors.add(new Author(id, name, imagePath, description));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return authors;
     }
     
     public List<AuthorOfBook> getAuthorsOfBook(int bookId) {
@@ -41,5 +58,17 @@ public class AuthorDataAccess {
             e.printStackTrace();
         }
         return list;
+    }
+    
+    public void addOne(Author author) {
+        String sp = "{call spAuthor_AddOne(?, ?, ?)}";
+        try (CallableStatement statement = DataAccess.getConnection().prepareCall(sp)) {
+            statement.setString("Name", author.getName());
+            statement.setString("Description", author.getDescription());
+            statement.setString("ImagePath", author.getImagePath());
+            statement.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }

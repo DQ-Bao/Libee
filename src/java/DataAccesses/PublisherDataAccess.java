@@ -5,21 +5,30 @@ import DataAccesses.Internal.DataAccess;
 import java.util.List;
 import java.util.ArrayList;
 import java.sql.Connection;
+import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class PublisherDataAccess {
-
-    public PublisherDataAccess() {
+    private static PublisherDataAccess INSTANCE;
+    
+    public static PublisherDataAccess getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new PublisherDataAccess();
+        }
+        return INSTANCE;
+    }
+    
+    private PublisherDataAccess() {
     }
     
     public List<Publisher> getAll() {
-        String sql = "select * from Publisher;";
+        String sp = "{call spPublisher_GetAll}";
         List<Publisher> publishers = new ArrayList<>();
-        try (Connection conn = DataAccess.getConnection();
-            PreparedStatement statement = conn.prepareStatement(sql)) {
-            ResultSet res = statement.executeQuery();
+        try (CallableStatement statement = DataAccess.getConnection().prepareCall(sp)) {
+            statement.execute();
+            ResultSet res = statement.getResultSet();
             while (res.next()) {
                 int id = res.getInt("Id");
                 String name = res.getString("Name");
@@ -48,20 +57,7 @@ public class PublisherDataAccess {
         }
         return pub;
     }
-    public boolean addOne(String pubName) {
-        String sql = "insert into Publisher([Name]) values (?);";
-        boolean success = false;
-        try (Connection conn = DataAccess.getConnection();
-            PreparedStatement statement = conn.prepareStatement(sql)) {
-            statement.setString(1, pubName);
-            if (statement.executeUpdate() == 1) {
-                success = true;
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return success;
-    }
+    
     public boolean updateOne(Publisher pub) {
         String sql = "update Publisher set [Name] = ? where [Id] = ?;";
         boolean success = false;
@@ -90,5 +86,15 @@ public class PublisherDataAccess {
             e.printStackTrace();
         }
         return success;
+    }
+    
+    public void addOne(Publisher publisher) {
+        String sp = "{call spPublisher_AddOne(?)}";
+        try (CallableStatement statement = DataAccess.getConnection().prepareCall(sp)) {
+            statement.setString("Name", publisher.getName());
+            statement.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }

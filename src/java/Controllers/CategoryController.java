@@ -1,6 +1,8 @@
 package Controllers;
 
-import Models.Publisher;
+import Annotations.Authorize;
+import Models.Category;
+import Models.SubCategory;
 import Services.ProductService;
 import java.io.IOException;
 import jakarta.servlet.ServletException;
@@ -8,15 +10,16 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-public class PublisherController extends HttpServlet {
+public class CategoryController extends HttpServlet {
     private ProductService productSVC;
-
+    
     @Override
     public void init() throws ServletException {
         this.productSVC = ProductService.getInstance();
     }
     
     @Override
+    @Authorize({"Admin"})
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) 
             throws ServletException, IOException {
         String action = req.getParameter("action");
@@ -24,9 +27,14 @@ public class PublisherController extends HttpServlet {
             resp.sendError(400);
             return;
         }
-        if (action.equals("add-publisher")) {
-            String name = req.getParameter("publisher-name");
-            productSVC.addOnePublisher(Publisher.getBuilder().Name(name).Build());
+        if (action.equals("add-category")) {
+            String name = req.getParameter("category-name");
+            productSVC.addOneCategory(Category.getBuilder().Name(name).Build());
+        }
+        else if (action.equals("add-subCategory")) {
+            String name = req.getParameter("subCategory-name");
+            int parentId = Integer.parseInt(req.getParameter("subCategory-parentId"));
+            productSVC.addOneSubCategory(SubCategory.getBuilder().Name(name).ParentId(parentId).Build());
         }
         resp.sendRedirect(req.getContextPath() + "/Admin");
     }

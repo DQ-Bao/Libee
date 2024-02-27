@@ -1,6 +1,7 @@
 package DataAccesses;
 
 import Models.Category;
+import Models.SubCategory;
 import Models.SubCategoryOfBook;
 import DataAccesses.Internal.DataAccess;
 import java.util.List;
@@ -25,20 +26,39 @@ public class CategoryDataAccess {
     }
     
     public List<Category> getAll() {
-        String sql = "select * from Category;";
-        List<Category> publishers = new ArrayList<>();
-        try (Connection conn = DataAccess.getConnection();
-            PreparedStatement statement = conn.prepareStatement(sql)) {
-            ResultSet res = statement.executeQuery();
+        String sp = "{call spCategory_GetAll}";
+        List<Category> categories = new ArrayList<>();
+        try (CallableStatement statement = DataAccess.getConnection().prepareCall(sp)) {
+            statement.execute();
+            ResultSet res = statement.getResultSet();
             while (res.next()) {
                 int id = res.getInt("Id");
                 String name = res.getString("Name");
-                publishers.add(new Category(id, name));
+                categories.add(new Category(id, name));
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return publishers;
+        return categories;
+    }
+    
+    public List<SubCategory> getSubCategories(String categoryName) {
+        String sp = "{call spCategory_GetSubCategories(?)}";
+        List<SubCategory> subCategories = new ArrayList<>();
+        try (CallableStatement statement = DataAccess.getConnection().prepareCall(sp)) {
+            statement.setString("CategoryName", categoryName);
+            statement.execute();
+            ResultSet res = statement.getResultSet();
+            while (res.next()) {
+                int id = res.getInt("Id");
+                String name = res.getString("Name");
+                int parentId = res.getInt("CategoryId");
+                subCategories.add(new SubCategory(id, name, parentId));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return subCategories;
     }
     
     public List<SubCategoryOfBook> getSubCategoriesOfBook(int bookId) {
@@ -78,21 +98,6 @@ public class CategoryDataAccess {
         return cate;
     }
     
-    public boolean addOne(String cateName) {
-        String sql = "insert into Category([Name]) values (?);";
-        boolean success = false;
-        try (Connection conn = DataAccess.getConnection();
-            PreparedStatement statement = conn.prepareStatement(sql)) {
-            statement.setString(1, cateName);
-            if (statement.executeUpdate() == 1) {
-                success = true;
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return success;
-    }
-    
     public boolean updateOne(Category cate) {
         String sql = "update Category set [Name] = ? where [Id] = ?;";
         boolean success = false;
@@ -122,5 +127,26 @@ public class CategoryDataAccess {
             e.printStackTrace();
         }
         return success;
+    }
+
+    public void addOneCategory(Category category) {
+        String sp = "{call spCategory_AddOne(?)}";
+        try (CallableStatement statement = DataAccess.getConnection().prepareCall(sp)) {
+            statement.setString("Name", category.getName());
+            statement.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void addOneSubCategory(SubCategory subCategory) {
+        String sp = "{call spSubCategory_AddOne(?, ?)}";
+        try (CallableStatement statement = DataAccess.getConnection().prepareCall(sp)) {
+            statement.setString("Name", subCategory.getName());
+            statement.setInt("CategoryId", subCategory.getParentId());
+            statement.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }
