@@ -9,8 +9,8 @@
             <div class="col-lg-7 mb-5">
                 <div class="text-danger">${message}</div>
                 <form action="${pageContext.request.contextPath}/Register" method="post" id="registerForm">
-                    <input type="text" class="form-control mb-3" name="first_name" placeholder="Your First Name" required/>
-                    <input type="text" class="form-control mb-3" name="last_name" placeholder="Your Last Name" required/>
+                    <input type="text" class="form-control mb-3" name="first-name" placeholder="Your First Name" required/>
+                    <input type="text" class="form-control mb-3" name="last-name" placeholder="Your Last Name" required/>
                     <input type="email" class="form-control mb-3" name="email" placeholder="Your Email" required/>
                     <input type="password" class="form-control mb-3" name="password" placeholder="Your Password" required/>
                     <button class="btn btn-primary py-2 px-4" type="submit" id="registerButton">Register</button>

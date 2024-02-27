@@ -3,7 +3,6 @@ package Controllers;
 import Models.User;
 import DataAccesses.UserDataAccess;
 import java.io.IOException;
-import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,21 +24,21 @@ public class RegisterController extends HttpServlet {
             resp.sendRedirect(req.getContextPath());
         }
         else {
-            req.getRequestDispatcher("WEB-INF/Views/Register.jsp").forward(req, resp);
+            req.getRequestDispatcher("/WEB-INF/Views/Register.jsp").forward(req, resp);
         }
     }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) 
             throws ServletException, IOException {
-        String firstName = req.getParameter("first_name");
-        String lastName = req.getParameter("last_name");
+        String firstName = req.getParameter("first-name");
+        String lastName = req.getParameter("last-name");
         String email = req.getParameter("email");
         String password = req.getParameter("password");
         boolean success = dao.register(firstName, lastName, email, password);
         if (!success) {
             req.setAttribute("message", "Register Failed!");
-            req.getRequestDispatcher("WEB-INF/Views/Register.jsp").forward(req, resp);
+            req.getRequestDispatcher("/WEB-INF/Views/Register.jsp").forward(req, resp);
         }
         else {
             resp.sendRedirect(req.getContextPath() + "/Login");
