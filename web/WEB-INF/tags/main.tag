@@ -163,10 +163,6 @@
         <script src="${pageContext.request.contextPath}/lib/easing/easing.min.js"></script>
         <script src="${pageContext.request.contextPath}/lib/owlcarousel/owl.carousel.min.js"></script>
 
-        <!-- Contact Javascript File -->
-        <script src="${pageContext.request.contextPath}/mail/jqBootstrapValidation.min.js"></script>
-        <script src="${pageContext.request.contextPath}/mail/contact.js"></script>
-
         <!-- Template Javascript -->
         <script src="${pageContext.request.contextPath}/js/main.js"></script>
         <jsp:invoke fragment="script"/>
