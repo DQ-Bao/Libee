@@ -8,7 +8,7 @@
             <div class="d-flex align-items-center justify-content-between mb-4">
                 <form action="${pageContext.request.contextPath}/Product" method="post">
                     <div class="input-group">
-                        <input type="text" name="search_name" class="form-control" placeholder="Search by name">
+                        <input type="text" name="search-name" class="form-control" placeholder="Search by name">
                         <div class="input-group-append">
                             <span class="input-group-text bg-transparent text-primary">
                                 <i class="fa fa-search"></i>
@@ -19,7 +19,7 @@
             </div>
         </div>
         <c:forEach items="${product_list}" var="p">
-            <t:productCard id="${p.id}" name="${p.name}" price="${p.price}" imgPath="${p.imagePath}"/>
+            <t:productCard id="${p.id}" type="${p.category.name}" name="${p.name}" price="${p.price}" imgPath="${p.imagePath}"/>
         </c:forEach>
     </div>
 </div>

@@ -4,7 +4,6 @@ import Models.Book;
 import DataAccesses.BookDataAccess;
 import java.util.List;
 import java.io.IOException;
-import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,8 +18,20 @@ public class BookController extends HttpServlet {
     }
     
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
-        List<Book> list = dao.getAll();
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+        String qId = req.getParameter("id");
+        if (qId == null) {
+            resp.sendError(404);
+        }
+        try {
+            int id = Integer.parseInt(qId);
+            Book book = dao.getById(id);
+            req.setAttribute("book", book);
+            req.getRequestDispatcher("/WEB-INF/Views/BookDetail.jsp").forward(req, resp);
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+            resp.sendError(404);
+        }
     } 
 }

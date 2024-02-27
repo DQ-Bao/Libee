@@ -27,7 +27,17 @@ public class Product {
     public static ProductBuilder getBuilder() {
         return new ProductBuilder();
     }
-    
+
+    public Product(int id, String name, double price, String description, Category category, int quantityInStock, String imagePath) {
+        this.id = id;
+        this.name = name;
+        this.price = price;
+        this.description = description;
+        this.category = category;
+        this.quantityInStock = quantityInStock;
+        this.imagePath = imagePath;
+    }
+
     public static class ProductBuilder<T extends ProductBuilder<T>> {
         protected int id;
         protected String name;

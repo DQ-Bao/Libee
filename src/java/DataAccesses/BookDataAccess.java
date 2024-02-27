@@ -1,17 +1,17 @@
 package DataAccesses;
 
 import Models.Book;
+import Models.Book.BookBuilder;
 import Models.AuthorOfBook;
 import Models.SubCategoryOfBook;
 import Models.Publisher;
 import Models.Category;
 import DataAccesses.Internal.DataAccess;
-import java.util.List;
-import java.util.ArrayList;
+import java.util.stream.Collectors;
 import java.time.LocalDateTime;
-import java.sql.Statement;
 import java.sql.CallableStatement;
 import java.sql.ResultSet;
+import java.sql.Timestamp;
 import java.sql.SQLException;
 
 public class BookDataAccess {
@@ -27,76 +27,116 @@ public class BookDataAccess {
     private BookDataAccess() {
     }
     
-    public List<Book> getAll() {
-        List<Book> list = new ArrayList<>();
-        String sp = "{call spBook_GetAll}";
-        try (CallableStatement statement = DataAccess.getConnection().prepareCall(sp, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
+    public Book getById(int bookId) {
+        String sp = "{call spBook_GetById(?)}";
+        Book book = null;
+        try (CallableStatement statement = DataAccess.getConnection().prepareCall(sp)) {
+            BookBuilder builder = null;
+            statement.setInt("BookId", bookId);
             statement.execute();
-            ResultSet bookRes = statement.getResultSet();
-            statement.getMoreResults(Statement.KEEP_CURRENT_RESULT);
-            ResultSet authorRes = statement.getResultSet();
-            statement.getMoreResults(Statement.KEEP_CURRENT_RESULT);
-            ResultSet genreRes = statement.getResultSet();
-            while (bookRes.next()) {
-                int id = bookRes.getInt("Id");
-                String name = bookRes.getString("Name");
-                double price = bookRes.getDouble("Price");
-                String description = bookRes.getString("Description");
-                int categoryId = bookRes.getInt("CategoryId");
-                String categoryName = bookRes.getString("CategoryName");
-                int quantityInStock = bookRes.getInt("QuantityInStock");
-                String imagePath = bookRes.getString("ImagePath");
-                String isbn10 = bookRes.getString("ISBN10");
-                String isbn13 = bookRes.getString("ISBN13");
-                String language = bookRes.getString("Language");
-                int publisherId = bookRes.getInt("PublisherId");
-                String publisherName = bookRes.getString("PublisherName");
-                LocalDateTime publicationDate = bookRes.getTimestamp("PublicationDate").toLocalDateTime();
-                List<AuthorOfBook> authors = getAuthors(id, authorRes);
-                List<SubCategoryOfBook> genres = getGenres(id, genreRes);
-                list.add(
-                    new Book(
-                        id, name, price, description, categoryId, new Category(categoryId, categoryName), quantityInStock, imagePath, 
-                        isbn10, isbn13, language, new Publisher(publisherId, publisherName), publicationDate, authors, genres
-                    )
-                );
+            ResultSet res = statement.getResultSet();
+            while (res.next()) {
+                int id = res.getInt("Id");
+                String name = res.getString("Name");
+                double price = res.getDouble("Price");
+                String description = res.getString("Description");
+                int categoryId = res.getInt("CategoryId");
+                String categoryName = res.getString("CategoryName");
+                int quantityInStock = res.getInt("QuantityInStock");
+                String imagePath = res.getString("ImagePath");
+                String isbn10 = res.getString("ISBN10");
+                String isbn13 = res.getString("ISBN13");
+                String language = res.getString("Language");
+                int publisherId = res.getInt("PublisherId");
+                String publisherName = res.getString("PublisherName");
+                LocalDateTime publicationDate = res.getTimestamp("PublicationDate").toLocalDateTime();
+                builder = Book
+                        .getBuilder()
+                        .Id(id)
+                        .Name(name)
+                        .Price(price)
+                        .Description(description)
+                        .Category(Category
+                                .getBuilder()
+                                .Id(categoryId)
+                                .Name(categoryName))
+                        .QuantityInStock(quantityInStock)
+                        .ImagePath(imagePath)
+                        .ISBN10(isbn10)
+                        .ISBN13(isbn13)
+                        .Language(language)
+                        .Publisher(Publisher
+                                .getBuilder()
+                                .Id(publisherId)
+                                .Name(publisherName))
+                        .PublicationDate(publicationDate);
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return list;
-    }
-    
-    private List<AuthorOfBook> getAuthors(int id, ResultSet res)
-        throws SQLException {
-        List<AuthorOfBook> list = new ArrayList<>();
-        while (res.next()) {
-            int bookId = res.getInt("BookId");
-            if (bookId == id) {
+            
+            if (builder == null) {
+                return null;
+            }
+            
+            statement.getMoreResults();
+            res = statement.getResultSet();
+            while (res.next()) {
+                int bId = res.getInt("BookId");
+                int genreId = res.getInt("SubCategoryId");
+                String name = res.getString("Name");
+                boolean primary = res.getBoolean("Primary");
+                builder = builder
+                        .Genre(SubCategoryOfBook
+                                .getBuilder()
+                                .BookId(bId)
+                                .SubCategoryId(genreId)
+                                .SubCategoryName(name)
+                                .Primary(primary));
+            }
+            
+            statement.getMoreResults();
+            res = statement.getResultSet();
+            while (res.next()) {
+                int bId = res.getInt("BookId");
                 int authorId = res.getInt("AuthorId");
                 String name = res.getString("Name");
                 String description = res.getString("Description");
                 String imagePath = res.getString("ImagePath");
-                list.add(new AuthorOfBook(bookId, authorId, name, imagePath, description));
+                builder = builder
+                        .Author(AuthorOfBook
+                                .getBuilder()
+                                .BookId(bId)
+                                .AuthorId(authorId)
+                                .AuthorName(name)
+                                .AuthorDescription(description)
+                                .AuthorImagePath(imagePath));
             }
+            book = builder.Build();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-        res.beforeFirst();
-        return list;
+        return book;
     }
     
-    private List<SubCategoryOfBook> getGenres(int id, ResultSet res)
-        throws SQLException {
-        List<SubCategoryOfBook> list = new ArrayList<>();
-        while (res.next()) {
-            int bookId = res.getInt("BookId");
-            if (bookId == id) {
-                int genreId = res.getInt("SubCategoryId");
-                String name = res.getString("Name");
-                boolean primary = res.getBoolean("Primary");
-                list.add(new SubCategoryOfBook(bookId, genreId, name, primary));
-            }
+    public void addOne(Book book) {
+        String authorList = book.getAuthors().stream().map(author -> String.valueOf(author.getAuthorId())).collect(Collectors.joining(","));
+        String genreList = book.getGenres().stream().map(genre ->  String.valueOf(genre.getSubCategoryId() + "-" + (genre.isPrimary() ? "1" : "0"))).collect(Collectors.joining(","));
+        String sp = "{call spBook_AddOne(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)}";
+        try (CallableStatement statement = DataAccess.getConnection().prepareCall(sp)) {
+            statement.setString("Name", book.getName());
+            statement.setDouble("Price", book.getPrice());
+            statement.setString("Description", book.getDescription());
+            statement.setInt("CategoryId", book.getCategory().getId());
+            statement.setInt("QuantityInStock", book.getQuantityInStock());
+            statement.setString("ImagePath", book.getImagePath());
+            statement.setString("ISBN10", book.getIsbn10());
+            statement.setString("ISBN13", book.getIsbn13());
+            statement.setString("Language", book.getLanguage());
+            statement.setInt("PublisherId", book.getPublisher().getId());
+            statement.setTimestamp("PublicationDate", Timestamp.valueOf(book.getPublicationDate()));
+            statement.setString("AuthorList", authorList);
+            statement.setString("SubCategoryList", genreList);
+            statement.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-        res.beforeFirst();
-        return list;
     }
 }

@@ -29,7 +29,7 @@ create table UserHasRole(
 );
 create table Cart(
 	[Id] int primary key identity,
-	[UserId] int foreign key references [User]([Id]),
+	[UserId] int not null foreign key references [User]([Id]),
 	[CreatedDate] datetime2 not null default getutcdate(),
 	[SaleDate] datetime2,
 	[Total] decimal(19, 4) not null

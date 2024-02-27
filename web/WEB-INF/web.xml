@@ -9,10 +9,6 @@
         <url-pattern>/*</url-pattern>
     </filter-mapping>
     <servlet>
-        <servlet-name>PublisherController</servlet-name>
-        <servlet-class>Controllers.PublisherController</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>BookController</servlet-name>
         <servlet-class>Controllers.BookController</servlet-class>
     </servlet>
@@ -44,13 +40,25 @@
         <servlet-name>IndexController</servlet-name>
         <servlet-class>Controllers.IndexController</servlet-class>
     </servlet>
-    <servlet-mapping>
+    <servlet>
+        <servlet-name>AdminController</servlet-name>
+        <servlet-class>Controllers.AdminController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>CategoryController</servlet-name>
+        <servlet-class>Controllers.CategoryController</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>PublisherController</servlet-name>
-        <url-pattern>/Publisher</url-pattern>
-    </servlet-mapping>
+        <servlet-class>Controllers.PublisherController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ImageController</servlet-name>
+        <servlet-class>Controllers.ImageController</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>BookController</servlet-name>
-        <url-pattern>/Book</url-pattern>
+        <url-pattern>/Product/Book</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>AuthorController</servlet-name>
@@ -78,6 +86,22 @@
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>IndexController</servlet-name>
-        <url-pattern></url-pattern>
+        <url-pattern/>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>AdminController</servlet-name>
+        <url-pattern>/Admin</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CategoryController</servlet-name>
+        <url-pattern>/Category</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>PublisherController</servlet-name>
+        <url-pattern>/Publisher</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ImageController</servlet-name>
+        <url-pattern>/files/images/*</url-pattern>
     </servlet-mapping>
 </web-app>
