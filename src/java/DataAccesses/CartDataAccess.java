@@ -6,6 +6,7 @@ import Models.CartItem;
 import Models.Product;
 import Models.Category;
 import DataAccesses.Internal.DataAccess;
+import DataAccesses.Internal.DBProps;
 import java.time.LocalDateTime;
 import java.sql.CallableStatement;
 import java.sql.ResultSet;
@@ -13,22 +14,24 @@ import java.sql.SQLException;
 
 public class CartDataAccess {
     private static CartDataAccess INSTANCE;
+    private DBProps props;
     
-    public static CartDataAccess getInstance() {
+    public static CartDataAccess getInstance(DBProps props) {
         if (INSTANCE == null) {
-            INSTANCE = new CartDataAccess();
+            INSTANCE = new CartDataAccess(props);
         }
         return INSTANCE;
     }
     
-    private CartDataAccess() {
+    private CartDataAccess(DBProps props) {
+        this.props = props;
     }
     
     public Cart getActiveCartOfUser(int userId) {
         String sp = "{call spCart_GetActiveCartOfUser(?)}";
         Cart cart = null;
         
-        try (CallableStatement statement = DataAccess.getConnection().prepareCall(sp)) {
+        try (CallableStatement statement = DataAccess.getConnection(props).prepareCall(sp)) {
             statement.setInt("UserId", userId);
             statement.execute();
             ResultSet res = statement.getResultSet();
@@ -92,7 +95,7 @@ public class CartDataAccess {
     
     public void addOneItem(int cartId, int productId, int quantity, double purchasePrice) {
         String sp = "{call spCart_AddOneItem(?, ?, ?, ?)}";
-        try (CallableStatement statement = DataAccess.getConnection().prepareCall(sp)) {
+        try (CallableStatement statement = DataAccess.getConnection(props).prepareCall(sp)) {
             statement.setInt("CartId", cartId);
             statement.setInt("ProductId", productId);
             statement.setInt("Quantity", quantity);
@@ -103,9 +106,20 @@ public class CartDataAccess {
         }
     }
     
+    public void deleteOneItem(int cartId, int productId) {
+        String sp = "{call spCart_DeleteOneItem(?, ?)}";
+        try (CallableStatement statement = DataAccess.getConnection(props).prepareCall(sp)) {
+            statement.setInt("CartId", cartId);
+            statement.setInt("ProductId", productId);
+            statement.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    
     public void calcTotal(int cartId) {
         String sp = "{call spCart_CalcTotal(?)}";
-        try (CallableStatement statement = DataAccess.getConnection().prepareCall(sp)) {
+        try (CallableStatement statement = DataAccess.getConnection(props).prepareCall(sp)) {
             statement.setInt("CartId", cartId);
             statement.execute();
         } catch (SQLException e) {

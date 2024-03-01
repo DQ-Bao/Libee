@@ -32,7 +32,7 @@ create table Cart(
 	[UserId] int not null foreign key references [User]([Id]),
 	[CreatedDate] datetime2 not null default getutcdate(),
 	[SaleDate] datetime2,
-	[Total] decimal(19, 4) not null
+	[Total] decimal(19, 4) not null default 0.0
 );
 create table CartItem(
 	[CartId] int foreign key references Cart([Id]),

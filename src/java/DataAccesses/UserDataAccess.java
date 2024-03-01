@@ -3,6 +3,7 @@ package DataAccesses;
 import Models.User;
 import Models.Role;
 import DataAccesses.Internal.DataAccess;
+import DataAccesses.Internal.DBProps;
 import java.sql.CallableStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -16,21 +17,23 @@ import java.time.LocalDateTime;
 
 public class UserDataAccess {
     private static UserDataAccess INSTANCE;
+    private DBProps props;
     
-    public static UserDataAccess getInstance() {
+    public static UserDataAccess getInstance(DBProps props) {
         if (INSTANCE == null) {
-            INSTANCE = new UserDataAccess();
+            INSTANCE = new UserDataAccess(props);
         }
         return INSTANCE;
     }
     
-    private UserDataAccess() {
+    private UserDataAccess(DBProps props) {
+        this.props = props;
     }
     
     public boolean register(String firstName, String lastName, String email, String password) {
         String sp = "{call spUser_Register(?, ?, ?, ?, ?)}";
         boolean success = false;
-        try (CallableStatement statement = DataAccess.getConnection().prepareCall(sp)) {
+        try (CallableStatement statement = DataAccess.getConnection(props).prepareCall(sp)) {
             byte[] salt = generateSalt();
             String hash = hashPassword(password, salt);
             String dbPassword = hash + ":" + Base64.getEncoder().encodeToString(salt);
@@ -51,7 +54,7 @@ public class UserDataAccess {
     public User login(String email, String password) {
         String sp = "{call spUser_GetByEmail(?)}";
         User user = null;
-        try (CallableStatement statement = DataAccess.getConnection().prepareCall(sp)) {
+        try (CallableStatement statement = DataAccess.getConnection(props).prepareCall(sp)) {
             statement.setString("Email", email);
             statement.execute();
             ResultSet userRes = statement.getResultSet();

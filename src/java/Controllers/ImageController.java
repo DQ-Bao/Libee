@@ -6,23 +6,23 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Files;
-import java.util.Properties;
 
 public class ImageController extends HttpServlet {
+    private static String IMAGE_LOCATION;
+
+    @Override
+    public void init() throws ServletException {
+        IMAGE_LOCATION = getServletContext().getInitParameter("image-location");
+    }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) 
             throws ServletException, IOException {
-        Properties props = new Properties();
-        InputStream in = req.getServletContext().getResourceAsStream("/WEB-INF/app.properties");
-        props.load(in);
-        String imageAbsolutePath = props.getProperty("file.image.location");
         String imageName = req.getPathInfo().substring(1);
-        File file = new File(imageAbsolutePath, imageName);
+        File file = new File(IMAGE_LOCATION, imageName);
         if (!file.exists()) {
-            resp.sendError(HttpServletResponse.SC_NOT_FOUND);
+            resp.sendError(404);
             return;
         }
         resp.setHeader("Content-Type", req.getServletContext().getMimeType(imageName));

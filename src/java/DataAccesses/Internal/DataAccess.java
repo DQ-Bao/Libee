@@ -6,13 +6,14 @@ import java.sql.Connection;
 
 public class DataAccess {
     private static Connection conn;
-    public static Connection getConnection() {
+    
+    public static Connection getConnection(DBProps props) {
         if (conn != null) {
             return conn;
         }
         try {
-            Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
-            conn = DriverManager.getConnection("jdbc:sqlserver://localhost:1433;databaseName=Libee;encrypt=false;trustServerCertificate=true;", "sa", "sa");
+            Class.forName(props.getDriverName());
+            conn = DriverManager.getConnection(props.getConnectionString());
         } catch (ClassNotFoundException | SQLException e) {
             e.printStackTrace();
         }

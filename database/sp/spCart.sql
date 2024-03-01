@@ -29,14 +29,31 @@ begin
 end
 go
 
+create or alter procedure spCart_DeleteOneItem
+	@CartId int,
+	@ProductId int
+as
+begin
+	delete from CartItem where [CartId] = @CartId and [ProductId] = @ProductId;
+end
+go
+
 create or alter procedure spCart_CalcTotal
 	@CartId int
 as
 begin
 	declare @Total decimal(19, 4);
 	select @Total = sum([PurchasePrice] * [Quantity]) from CartItem where [CartId] = @CartId;
-	
-	update Cart
-	set [Total] = @Total
-	where [Id] = @CartId;
+	if @Total is not null
+	begin
+		update Cart
+		set [Total] = @Total
+		where [Id] = @CartId;
+	end
+	else
+	begin
+		update Cart
+		set [Total] = 0.0
+		where [Id] = @CartId;
+	end
 end

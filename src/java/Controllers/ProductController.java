@@ -1,14 +1,16 @@
 package Controllers;
 
 import Annotations.Authorize;
-import Services.ProductService;
+import DataAccesses.Internal.DBProps;
 import Models.Product;
 import DataAccesses.ProductDataAccess;
+import DataAccesses.BookDataAccess;
 import Models.AuthorOfBook;
 import Models.Book;
 import Models.Category;
 import Models.Publisher;
 import Models.SubCategoryOfBook;
+import Utils.ImageUtils;
 import java.io.IOException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
@@ -16,27 +18,30 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.Part;
-import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Properties;
 
 @MultipartConfig
 public class ProductController extends HttpServlet {
-    private ProductDataAccess dao;
-    private ProductService productSVC;
+    private static String IMAGE_LOCATION;
+    private ProductDataAccess productDAO;
+    private BookDataAccess bookDAO;
 
     @Override
     public void init() throws ServletException {
-        dao = ProductDataAccess.getInstance();
-        this.productSVC = ProductService.getInstance();
+        String driverName = getServletContext().getInitParameter("db-driver");
+        String connectionString = getServletContext().getInitParameter("db-connection-string");
+        DBProps props = new DBProps(driverName, connectionString);
+        this.productDAO = ProductDataAccess.getInstance(props);
+        this.bookDAO = BookDataAccess.getInstance(props);
+        IMAGE_LOCATION = getServletContext().getInitParameter("image-location");
     }
     
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-        List<Product> list = dao.getAll();
+        List<Product> list = productDAO.getAll();
         req.setAttribute("product_list", list);
         req.getRequestDispatcher("/WEB-INF/Views/ProductDisplay.jsp").forward(req, resp);
     }
@@ -60,14 +65,7 @@ public class ProductController extends HttpServlet {
             Part image = req.getPart("product-image");
             String imageName = null;
             if (image != null && image.getSize() != 0) {
-                imageName = image.getSubmittedFileName();
-                // TODO: Abstract properties in Configuration class
-                Properties props = new Properties();
-                InputStream in = req.getServletContext().getResourceAsStream("/WEB-INF/app.properties");
-                props.load(in);
-                String imageAbsolutePath = props.getProperty("file.image.location");
-                String uploadPath = imageAbsolutePath + "/" + imageName;
-                productSVC.saveImage(image.getInputStream(), uploadPath);
+                imageName = ImageUtils.saveImage(image.getInputStream(), IMAGE_LOCATION);
             }
             
             String categoryName = req.getParameter("product-categoryName");
@@ -113,7 +111,7 @@ public class ProductController extends HttpServlet {
                                         .SubCategoryId(genreId)
                                         .Primary(genreId == primaryGenreId));
                 }
-                productSVC.addOneBook(builder.Build());
+                bookDAO.addOne(builder.Build());
             }
             else {
                 Product product = Product
@@ -124,7 +122,7 @@ public class ProductController extends HttpServlet {
                         .QuantityInStock(quantityInStock)
                         .ImagePath(imageName)
                         .Build();
-                productSVC.addOneProduct(product);
+                productDAO.addOne(product);
             }
         }
         resp.sendRedirect(req.getContextPath() + "/Admin");

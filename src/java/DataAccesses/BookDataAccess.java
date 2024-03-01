@@ -7,6 +7,7 @@ import Models.SubCategoryOfBook;
 import Models.Publisher;
 import Models.Category;
 import DataAccesses.Internal.DataAccess;
+import DataAccesses.Internal.DBProps;
 import java.util.stream.Collectors;
 import java.time.LocalDateTime;
 import java.sql.CallableStatement;
@@ -16,21 +17,23 @@ import java.sql.SQLException;
 
 public class BookDataAccess {
     private static BookDataAccess INSTANCE = null;
+    private DBProps props;
     
-    public static BookDataAccess getInstance() {
+    public static BookDataAccess getInstance(DBProps props) {
         if (INSTANCE == null) {
-            INSTANCE = new BookDataAccess();
+            INSTANCE = new BookDataAccess(props);
         }
         return INSTANCE;
     }
     
-    private BookDataAccess() {
+    private BookDataAccess(DBProps props) {
+        this.props = props;
     }
     
     public Book getById(int bookId) {
         String sp = "{call spBook_GetById(?)}";
         Book book = null;
-        try (CallableStatement statement = DataAccess.getConnection().prepareCall(sp)) {
+        try (CallableStatement statement = DataAccess.getConnection(props).prepareCall(sp)) {
             BookBuilder builder = null;
             statement.setInt("BookId", bookId);
             statement.execute();
@@ -120,7 +123,7 @@ public class BookDataAccess {
         String authorList = book.getAuthors().stream().map(author -> String.valueOf(author.getAuthorId())).collect(Collectors.joining(","));
         String genreList = book.getGenres().stream().map(genre ->  String.valueOf(genre.getSubCategoryId() + "-" + (genre.isPrimary() ? "1" : "0"))).collect(Collectors.joining(","));
         String sp = "{call spBook_AddOne(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)}";
-        try (CallableStatement statement = DataAccess.getConnection().prepareCall(sp)) {
+        try (CallableStatement statement = DataAccess.getConnection(props).prepareCall(sp)) {
             statement.setString("Name", book.getName());
             statement.setDouble("Price", book.getPrice());
             statement.setString("Description", book.getDescription());

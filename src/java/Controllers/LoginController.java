@@ -4,6 +4,7 @@ import Models.User;
 import Models.Cart;
 import DataAccesses.UserDataAccess;
 import DataAccesses.CartDataAccess;
+import DataAccesses.Internal.DBProps;
 import java.io.IOException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
@@ -16,8 +17,11 @@ public class LoginController extends HttpServlet {
 
     @Override
     public void init() throws ServletException {
-        this.userDAO = UserDataAccess.getInstance();
-        this.cartDAO = CartDataAccess.getInstance();
+        String driverName = getServletContext().getInitParameter("db-driver");
+        String connectionString = getServletContext().getInitParameter("db-connection-string");
+        DBProps props = new DBProps(driverName, connectionString);
+        this.userDAO = UserDataAccess.getInstance(props);
+        this.cartDAO = CartDataAccess.getInstance(props);
     }
     
     @Override

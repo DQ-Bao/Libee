@@ -2,7 +2,7 @@ package Controllers;
 
 import Models.Book;
 import DataAccesses.BookDataAccess;
-import java.util.List;
+import DataAccesses.Internal.DBProps;
 import java.io.IOException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
@@ -14,7 +14,9 @@ public class BookController extends HttpServlet {
 
     @Override
     public void init() throws ServletException {
-        dao = BookDataAccess.getInstance();
+        String driverName = getServletContext().getInitParameter("db-driver");
+        String connectionString = getServletContext().getInitParameter("db-connection-string");
+        this.dao = BookDataAccess.getInstance(new DBProps(driverName, connectionString));
     }
     
     @Override

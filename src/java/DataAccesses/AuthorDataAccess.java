@@ -3,6 +3,7 @@ package DataAccesses;
 import Models.Author;
 import Models.AuthorOfBook;
 import DataAccesses.Internal.DataAccess;
+import DataAccesses.Internal.DBProps;
 import java.util.List;
 import java.util.ArrayList;
 import java.sql.CallableStatement;
@@ -11,21 +12,23 @@ import java.sql.SQLException;
 
 public class AuthorDataAccess {
     private static AuthorDataAccess INSTANCE;
+    private DBProps props;
     
-    public static AuthorDataAccess getInstance() {
+    public static AuthorDataAccess getInstance(DBProps props) {
         if (INSTANCE == null) {
-            INSTANCE = new AuthorDataAccess();
+            INSTANCE = new AuthorDataAccess(props);
         }
         return INSTANCE;
     }
     
-    private AuthorDataAccess() {
+    private AuthorDataAccess(DBProps props) {
+        this.props = props;
     }
     
     public List<Author> getAll() {
         String sp = "{call spAuthor_GetAll}";
         List<Author> authors = new ArrayList<>();
-        try (CallableStatement statement = DataAccess.getConnection().prepareCall(sp)) {
+        try (CallableStatement statement = DataAccess.getConnection(props).prepareCall(sp)) {
             statement.execute();
             ResultSet res = statement.getResultSet();
             while (res.next()) {
@@ -44,7 +47,7 @@ public class AuthorDataAccess {
     public List<AuthorOfBook> getAuthorsOfBook(int bookId) {
         List<AuthorOfBook> list = new ArrayList<>();
         String sp = "{call spBook_GetAuthors(?)}";
-        try (CallableStatement statement = DataAccess.getConnection().prepareCall(sp)) {
+        try (CallableStatement statement = DataAccess.getConnection(props).prepareCall(sp)) {
             statement.setInt("BookId", bookId);
             ResultSet res = statement.executeQuery();
             while (res.next()) {
@@ -62,7 +65,7 @@ public class AuthorDataAccess {
     
     public void addOne(Author author) {
         String sp = "{call spAuthor_AddOne(?, ?, ?)}";
-        try (CallableStatement statement = DataAccess.getConnection().prepareCall(sp)) {
+        try (CallableStatement statement = DataAccess.getConnection(props).prepareCall(sp)) {
             statement.setString("Name", author.getName());
             statement.setString("Description", author.getDescription());
             statement.setString("ImagePath", author.getImagePath());

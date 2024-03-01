@@ -1,5 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app version="6.0" xmlns="https://jakarta.ee/xml/ns/jakartaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd">
+    <context-param>
+        <param-name>db-driver</param-name>
+        <param-value>com.microsoft.sqlserver.jdbc.SQLServerDriver</param-value>
+    </context-param>
+    <context-param>
+        <param-name>db-connection-string</param-name>
+        <param-value>jdbc:sqlserver://localhost:1433;databaseName=Libee;encrypt=false;trustServerCertificate=true;user=sa;password=sa;</param-value>
+    </context-param>
+    <context-param>
+        <param-name>image-location</param-name>
+        <param-value>D:/Uni/SP24/PRJ301/Projects/Libee/database/files/images</param-value>
+    </context-param>
     <filter>
         <filter-name>AuthorizationFilter</filter-name>
         <filter-class>Filters.AuthorizationFilter</filter-class>

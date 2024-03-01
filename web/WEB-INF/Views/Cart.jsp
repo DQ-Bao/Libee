@@ -22,7 +22,13 @@
                                 <td class="align-middle">$${item.purchasePrice}</td>
                                 <td class="align-middle">${item.quantity}</td>
                                 <td class="align-middle">$${item.quantity * item.purchasePrice}</td>
-                                <td class="align-middle"><button class="btn btn-sm btn-primary"><i class="fa fa-times"></i></button></td>
+                                <td class="align-middle">
+                                    <form action="${pageContext.request.contextPath}/Cart" method="post">
+                                        <input type="hidden" name="form-action" value="remove-item">
+                                        <input type="hidden" name="product-id" value="${item.product.id}">
+                                        <button type="submit" class="btn btn-sm btn-primary"><i class="fa fa-times"></i></button>
+                                    </form>
+                                </td>
                             </tr>
                         </c:forEach>
                             <tr>

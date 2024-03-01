@@ -2,6 +2,7 @@ package DataAccesses;
 
 import Models.Publisher;
 import DataAccesses.Internal.DataAccess;
+import DataAccesses.Internal.DBProps;
 import java.util.List;
 import java.util.ArrayList;
 import java.sql.Connection;
@@ -12,21 +13,23 @@ import java.sql.SQLException;
 
 public class PublisherDataAccess {
     private static PublisherDataAccess INSTANCE;
+    private DBProps props;
     
-    public static PublisherDataAccess getInstance() {
+    public static PublisherDataAccess getInstance(DBProps props) {
         if (INSTANCE == null) {
-            INSTANCE = new PublisherDataAccess();
+            INSTANCE = new PublisherDataAccess(props);
         }
         return INSTANCE;
     }
     
-    private PublisherDataAccess() {
+    private PublisherDataAccess(DBProps props) {
+        this.props = props;
     }
     
     public List<Publisher> getAll() {
         String sp = "{call spPublisher_GetAll}";
         List<Publisher> publishers = new ArrayList<>();
-        try (CallableStatement statement = DataAccess.getConnection().prepareCall(sp)) {
+        try (CallableStatement statement = DataAccess.getConnection(props).prepareCall(sp)) {
             statement.execute();
             ResultSet res = statement.getResultSet();
             while (res.next()) {
@@ -42,7 +45,7 @@ public class PublisherDataAccess {
     public Publisher getById(int pubId) {
         String sql = "select * from Publisher where Id = ?;";
         Publisher pub = null;
-        try (Connection conn = DataAccess.getConnection();
+        try (Connection conn = DataAccess.getConnection(props);
             PreparedStatement statement = conn.prepareStatement(sql)) {
             statement.setInt(1, pubId);
             ResultSet res = statement.executeQuery();
@@ -61,7 +64,7 @@ public class PublisherDataAccess {
     public boolean updateOne(Publisher pub) {
         String sql = "update Publisher set [Name] = ? where [Id] = ?;";
         boolean success = false;
-        try (Connection conn = DataAccess.getConnection();
+        try (Connection conn = DataAccess.getConnection(props);
             PreparedStatement statement = conn.prepareStatement(sql)) {
             statement.setString(1, pub.getName());
             statement.setInt(2, pub.getId());
@@ -76,7 +79,7 @@ public class PublisherDataAccess {
     public boolean deleteOne(int pubId) {
         String sql = "delete from Publisher where [Id] = ?;";
         boolean success = false;
-        try (Connection conn = DataAccess.getConnection();
+        try (Connection conn = DataAccess.getConnection(props);
             PreparedStatement statement = conn.prepareStatement(sql)) {
             statement.setInt(1, pubId);
             if (statement.executeUpdate() == 1) {
@@ -90,7 +93,7 @@ public class PublisherDataAccess {
     
     public void addOne(Publisher publisher) {
         String sp = "{call spPublisher_AddOne(?)}";
-        try (CallableStatement statement = DataAccess.getConnection().prepareCall(sp)) {
+        try (CallableStatement statement = DataAccess.getConnection(props).prepareCall(sp)) {
             statement.setString("Name", publisher.getName());
             statement.execute();
         } catch (SQLException e) {

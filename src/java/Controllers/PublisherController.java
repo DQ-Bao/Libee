@@ -1,7 +1,8 @@
 package Controllers;
 
 import Models.Publisher;
-import Services.ProductService;
+import DataAccesses.Internal.DBProps;
+import DataAccesses.PublisherDataAccess;
 import java.io.IOException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
@@ -9,11 +10,13 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 public class PublisherController extends HttpServlet {
-    private ProductService productSVC;
+    private PublisherDataAccess publisherDAO;
 
     @Override
     public void init() throws ServletException {
-        this.productSVC = ProductService.getInstance();
+        String driverName = getServletContext().getInitParameter("db-driver");
+        String connectionString = getServletContext().getInitParameter("db-connection-string");
+        this.publisherDAO = PublisherDataAccess.getInstance(new DBProps(driverName, connectionString));
     }
     
     @Override
@@ -26,7 +29,7 @@ public class PublisherController extends HttpServlet {
         }
         if (action.equals("add-publisher")) {
             String name = req.getParameter("publisher-name");
-            productSVC.addOnePublisher(Publisher.getBuilder().Name(name).Build());
+            publisherDAO.addOne(Publisher.getBuilder().Name(name).Build());
         }
         resp.sendRedirect(req.getContextPath() + "/Admin");
     }

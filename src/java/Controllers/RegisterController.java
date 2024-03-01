@@ -1,5 +1,6 @@
 package Controllers;
 
+import DataAccesses.Internal.DBProps;
 import Models.User;
 import DataAccesses.UserDataAccess;
 import java.io.IOException;
@@ -13,7 +14,9 @@ public class RegisterController extends HttpServlet {
 
     @Override
     public void init() throws ServletException {
-        this.dao = UserDataAccess.getInstance();
+        String driverName = getServletContext().getInitParameter("db-driver");
+        String connectionString = getServletContext().getInitParameter("db-connection-string");
+        this.dao = UserDataAccess.getInstance(new DBProps(driverName, connectionString));
     }
 
     @Override
