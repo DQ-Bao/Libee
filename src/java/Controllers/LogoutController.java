@@ -1,7 +1,6 @@
 package Controllers;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -14,6 +13,7 @@ public class LogoutController extends HttpServlet {
             throws ServletException, IOException {
         req.getSession().removeAttribute("cart");
         req.getSession().removeAttribute("user");
+        req.getSession().removeAttribute("isAdmin");
         resp.sendRedirect(req.getContextPath());
     }
 }

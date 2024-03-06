@@ -126,4 +126,14 @@ public class CartDataAccess {
             e.printStackTrace();
         }
     }
+    
+    public void checkout(int cartId) {
+        String sp = "{call spCart_Checkout(?)}";
+        try (CallableStatement statement = DataAccess.getConnection(props).prepareCall(sp)) {
+            statement.setInt("CartId", cartId);
+            statement.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }

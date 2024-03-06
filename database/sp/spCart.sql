@@ -2,8 +2,17 @@ create or alter procedure spCart_GetActiveCartOfUser
 	@UserId int
 as
 begin
+	set nocount on;
+
 	declare @CartId int;
 	select @CartId = c.[Id] from Cart as c where c.[UserId] = @UserId and c.[SaleDate] is null;
+	
+	if @CartId is null
+	begin
+		insert into Cart([UserId], [CreatedDate])
+		values (@UserId, getutcdate());
+		select @CartId = c.[Id] from Cart as c where c.[UserId] = @UserId and c.[SaleDate] is null;
+	end
 
 	select c.[Id], c.[UserId], c.[CreatedDate], c.[Total] 
 	from Cart as c where c.[Id] = @CartId;
@@ -56,4 +65,20 @@ begin
 		set [Total] = 0.0
 		where [Id] = @CartId;
 	end
+end
+go
+
+create or alter procedure spCart_Checkout
+	@CartId int
+as
+begin
+	update Product
+	set [QuantityInStock] = [QuantityInStock] - ci.[Quantity]
+	from CartItem as ci
+	join Product as p on ci.[ProductId] = p.[Id]
+	where ci.[CartId] = @CartId;
+
+	update Cart
+	set [SaleDate] = getutcdate()
+	where [Id] = @CartId;
 end

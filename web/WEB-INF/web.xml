@@ -68,6 +68,10 @@
         <servlet-name>ImageController</servlet-name>
         <servlet-class>Controllers.ImageController</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>CheckoutController</servlet-name>
+        <servlet-class>Controllers.CheckoutController</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>BookController</servlet-name>
         <url-pattern>/Product/Book</url-pattern>
@@ -115,5 +119,9 @@
     <servlet-mapping>
         <servlet-name>ImageController</servlet-name>
         <url-pattern>/files/images/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CheckoutController</servlet-name>
+        <url-pattern>/Checkout</url-pattern>
     </servlet-mapping>
 </web-app>

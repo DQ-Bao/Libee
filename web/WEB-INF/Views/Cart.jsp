@@ -2,6 +2,9 @@
 <%@taglib uri="/WEB-INF/tlds/tag" prefix="t"%>
 <t:main>
     <div class="container-fluid pt-5">
+        <div class="text-center mb-4">
+            <h2 class="section-title px-5"><span class="px-2">Cart</span></h2>
+        </div>
         <div class="row px-xl-5">
             <!-- Items list -->
             <div class="col-lg-8 table-responsive mb-5">
@@ -37,7 +40,7 @@
                             </tr>
                     </tbody>
                 </table>
-                <button class="btn btn-block btn-primary my-3 py-3">Proceed To Checkout</button>
+                <a href="${pageContext.request.contextPath}/Checkout" class="btn btn-block btn-primary my-3 py-3">Proceed To Checkout</a>
             </div>
         </div>
     </div>

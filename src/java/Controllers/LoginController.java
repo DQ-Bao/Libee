@@ -52,6 +52,11 @@ public class LoginController extends HttpServlet {
                 req.getSession().setAttribute("cart", cart);
             }
             req.getSession().setAttribute("user", user);
+            for (int i = 0; i < user.getRoles().size(); i++) {
+                if (user.getRoles().get(i).getName().equals("Admin")) {
+                    req.getSession().setAttribute("isAdmin", true);
+                }
+            }
             resp.sendRedirect(req.getContextPath());
         }
     }
