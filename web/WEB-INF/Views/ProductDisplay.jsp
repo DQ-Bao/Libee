@@ -11,7 +11,15 @@
                 <t:productFilter/>
             </div>
             <!-- Sidebar End -->
-            <t:productDisplay items="${product_list}"/>
+            <div class="col-lg-9 col-md-12">
+                <div class="row pb-3">
+                    <c:forEach items="${product_list}" var="p">
+                        <div class="col-lg-4 col-md-6 col-sm-12 pb-1">
+                            <t:productCard id="${p.id}" type="${p.category.name}" name="${p.name}" price="${p.price}" imgPath="${p.imagePath}"/>
+                        </div>
+                    </c:forEach>
+                </div>
+            </div>
         </div>
     </div>
 </t:main>

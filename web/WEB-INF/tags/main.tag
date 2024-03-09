@@ -30,9 +30,10 @@
                     </a>
                 </div>
                 <div class="col-lg-6 col-6 text-left">
-                    <form action="">
+                    <form action="${pageContext.request.contextPath}/Search" method="post">
                         <div class="input-group">
-                            <input type="text" class="form-control" placeholder="Search for products">
+                            <input type="hidden" name="form-action" value="search-product">
+                            <input type="text" name="search-text" class="form-control" placeholder="Search for products">
                             <div class="input-group-append">
                                 <span class="input-group-text bg-transparent text-primary">
                                     <i class="fa fa-search"></i>
@@ -91,10 +92,16 @@
                         <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
                             <div class="navbar-nav mr-auto py-0">
                                 <a href="${pageContext.request.contextPath}" class="nav-item nav-link">Home</a>
-                                <a href="${pageContext.request.contextPath}/Publisher" class="nav-item nav-link">Publisher</a>
                                 <a href="${pageContext.request.contextPath}/Product" class="nav-item nav-link">Product</a>
-                                <a href="${pageContext.request.contextPath}/Book" class="nav-item nav-link">Book</a>
-                                <a href="${pageContext.request.contextPath}/Admin" class="nav-item nav-link">Admin</a>
+                                <c:if test="${sessionScope.isAdmin}">
+                                    <div class="nav-item dropdown">
+                                        <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Admin</a>
+                                        <div class="dropdown-menu rounded-0 m-0">
+                                            <a href="${pageContext.request.contextPath}/Admin/Product" class="dropdown-item">Product</a>
+                                            <a href="${pageContext.request.contextPath}/Admin/User" class="dropdown-item">User</a>
+                                        </div>
+                                    </div>
+                                </c:if>
                                 <jsp:invoke fragment="nav"/>
                             </div>
                             <div class="navbar-nav ml-auto py-0">
@@ -137,9 +144,7 @@
                             <h5 class="font-weight-bold text-dark mb-4">Quick Links</h5>
                             <div class="d-flex flex-column justify-content-start">
                                 <a class="text-dark mb-2" href="${pageContext.request.contextPath}"><i class="fa fa-angle-right mr-2"></i>Home</a>
-                                <a class="text-dark mb-2" href="${pageContext.request.contextPath}/Publisher"><i class="fa fa-angle-right mr-2"></i>Publisher</a>
                                 <a class="text-dark mb-2" href="${pageContext.request.contextPath}/Product"><i class="fa fa-angle-right mr-2"></i>Product</a>
-                                <a class="text-dark mb-2" href="${pageContext.request.contextPath}/Book"><i class="fa fa-angle-right mr-2"></i>Book</a>
                             </div>
                         </div>
                     </div>

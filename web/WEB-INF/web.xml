@@ -53,10 +53,6 @@
         <servlet-class>Controllers.IndexController</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>AdminController</servlet-name>
-        <servlet-class>Controllers.AdminController</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>CategoryController</servlet-name>
         <servlet-class>Controllers.CategoryController</servlet-class>
     </servlet>
@@ -71,6 +67,26 @@
     <servlet>
         <servlet-name>CheckoutController</servlet-name>
         <servlet-class>Controllers.CheckoutController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>AdminProductController</servlet-name>
+        <servlet-class>Controllers.Admin.AdminProductController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>AdminUserController</servlet-name>
+        <servlet-class>Controllers.Admin.AdminUserController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>AddProductController</servlet-name>
+        <servlet-class>Controllers.Admin.AddProductController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>UpdateProductController</servlet-name>
+        <servlet-class>Controllers.Admin.UpdateProductController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>DeleteProductController</servlet-name>
+        <servlet-class>Controllers.Admin.DeleteProductController</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>BookController</servlet-name>
@@ -105,10 +121,6 @@
         <url-pattern/>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>AdminController</servlet-name>
-        <url-pattern>/Admin</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
         <servlet-name>CategoryController</servlet-name>
         <url-pattern>/Category</url-pattern>
     </servlet-mapping>
@@ -123,5 +135,25 @@
     <servlet-mapping>
         <servlet-name>CheckoutController</servlet-name>
         <url-pattern>/Checkout</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>AdminProductController</servlet-name>
+        <url-pattern>/Admin/Product</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>AdminUserController</servlet-name>
+        <url-pattern>/Admin/User</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>AddProductController</servlet-name>
+        <url-pattern>/Admin/Product/Add</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>UpdateProductController</servlet-name>
+        <url-pattern>/Admin/Product/Update</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DeleteProductController</servlet-name>
+        <url-pattern>/Admin/Product/Delete</url-pattern>
     </servlet-mapping>
 </web-app>

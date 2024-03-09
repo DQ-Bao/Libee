@@ -22,6 +22,14 @@ public class ImageUtils {
         fout.close();
         return imageName;
     }
+    
+    public static void deleteImage(String imagePath) {
+        if (imagePath == null || imagePath.isBlank()) return;
+        File file = new File(imagePath);
+        if (!file.exists()) return;
+        file.delete();
+    }
+    
     public static String generateImageName() {
         UUID uuid = UUID.randomUUID();
         return "img_" + uuid.toString() + ".jpg";

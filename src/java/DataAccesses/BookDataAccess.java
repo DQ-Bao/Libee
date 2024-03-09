@@ -142,4 +142,29 @@ public class BookDataAccess {
             e.printStackTrace();
         }
     }
+    
+    public void updateOne(Book book) {
+        String authorList = book.getAuthors().stream().map(author -> String.valueOf(author.getAuthorId())).collect(Collectors.joining(","));
+        String genreList = book.getGenres().stream().map(genre ->  String.valueOf(genre.getSubCategoryId() + "-" + (genre.isPrimary() ? "1" : "0"))).collect(Collectors.joining(","));
+        String sp = "{call spBook_UpdateOne(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)}";
+        try (CallableStatement statement = DataAccess.getConnection(props).prepareCall(sp)) {
+            statement.setInt("Id", book.getId());
+            statement.setString("Name", book.getName());
+            statement.setDouble("Price", book.getPrice());
+            statement.setString("Description", book.getDescription());
+            statement.setInt("CategoryId", book.getCategory().getId());
+            statement.setInt("QuantityInStock", book.getQuantityInStock());
+            statement.setString("ImagePath", book.getImagePath());
+            statement.setString("ISBN10", book.getIsbn10());
+            statement.setString("ISBN13", book.getIsbn13());
+            statement.setString("Language", book.getLanguage());
+            statement.setInt("PublisherId", book.getPublisher().getId());
+            statement.setTimestamp("PublicationDate", Timestamp.valueOf(book.getPublicationDate()));
+            statement.setString("AuthorList", authorList);
+            statement.setString("SubCategoryList", genreList);
+            statement.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }

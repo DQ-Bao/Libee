@@ -87,6 +87,44 @@ begin
 end
 go
 
+create or alter procedure spBook_UpdateOne
+	@Id int,
+	@Name nvarchar(100),
+	@Price decimal(19, 4),
+	@Description nvarchar(max),
+	@CategoryId int,
+	@QuantityInStock int,
+	@ImagePath nvarchar(max),
+	@ISBN10 char(10),
+	@ISBN13 char(13),
+	@Language nvarchar(100),
+	@PublisherId int,
+	@PublicationDate datetime2,
+	@AuthorList varchar(max),
+	@SubCategoryList varchar(max)
+as
+begin
+	update Product
+	set [Name] = @Name, [Price] = @Price, [Description] = @Description, [QuantityInStock] = @QuantityInStock, [ImagePath] = @ImagePath
+	where [Id] = @Id;
+
+	update Book 
+	set [ISBN10] = @ISBN10, [ISBN13] = @ISBN13,
+	[Language] = @Language, [PublisherId] = @PublisherId, [PublicationDate] = @PublicationDate
+	where [ProductId] = @Id;
+
+	delete from AuthorOfBook where [BookId] = @Id;
+	insert into AuthorOfBook([BookId], [AuthorId]) select @Id, value from string_split(@AuthorList, ',');
+	delete from BookHasSubCategory where [BookId] = @Id;
+	insert into BookHasSubCategory([BookId], [SubCategoryId], [Primary]) 
+	select 
+	@Id,
+	cast(substring(value, 1, charindex('-', value) - 1) as int),
+	cast(substring(value, charindex('-', value), len(value)) as int)
+	from string_split(@SubCategoryList, ',');
+end
+go
+
 create or alter procedure spBook_GetSubCategories
 	@BookId int
 as

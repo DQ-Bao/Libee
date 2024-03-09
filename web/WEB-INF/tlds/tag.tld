@@ -29,11 +29,11 @@
     <path>/WEB-INF/tags/productCard.tag</path>
   </tag-file>
   <tag-file>
-    <name>productDisplay</name>
-    <path>/WEB-INF/tags/productDisplay.tag</path>
-  </tag-file>
-  <tag-file>
     <name>productFilter</name>
     <path>/WEB-INF/tags/productFilter.tag</path>
+  </tag-file>
+  <tag-file>
+    <name>productForm</name>
+    <path>/WEB-INF/tags/productForm.tag</path>
   </tag-file>
 </taglib>
