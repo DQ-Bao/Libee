@@ -27,4 +27,10 @@ public class Role {
     public void setName(String name) {
         this.name = name;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof Role)) return false;
+        return this.id == ((Role)obj).id;
+    }
 }

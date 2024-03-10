@@ -1,3 +1,14 @@
+create or alter procedure spUser_GetAll
+as
+begin
+	select u.*, r.[Id] as RoleId, r.[Name] as RoleName
+	from [User] as u
+	join [UserHasRole] as uhr on u.[Id] = uhr.[UserId]
+	join [Role] as r on uhr.[RoleId] = r.[Id]
+	order by u.[Id] asc;
+end
+go
+
 create or alter procedure spUser_GetByEmail
 	@Email varchar(max)
 as
@@ -68,4 +79,14 @@ create or alter procedure spUser_DeleteAccount
 as
 begin
 	delete from [User] where [Id] = @Id;
+end
+go
+
+create or alter procedure spUser_UpdateRoles
+	@Id int,
+	@RoleIds varchar(max)
+as
+begin
+	delete from [UserHasRole] where [UserId] = @Id;
+	insert into [UserHasRole]([UserId], [RoleId]) select @Id, value from string_split(@RoleIds, ',');
 end

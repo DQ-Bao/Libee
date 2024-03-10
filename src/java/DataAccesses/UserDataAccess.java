@@ -30,6 +30,36 @@ public class UserDataAccess {
         this.props = props;
     }
     
+    public List<User> getAll() {
+        List<User> list = new ArrayList<>();
+        String sp = "{call spUser_GetAll}";
+        try (CallableStatement statement = DataAccess.getConnection(props).prepareCall(sp)) {
+            statement.execute();
+            ResultSet res = statement.getResultSet();
+            int prevId = -1;
+            User ptr = null;
+            while (res.next()) {
+                int id = res.getInt("Id");
+                if (prevId != id) {
+                    prevId = id;
+                    String firstName = res.getString("FirstName");
+                    String lastName = res.getString("LastName");
+                    String email = res.getString("Email");
+                    LocalDateTime createdDate = res.getTimestamp("CreatedDate").toLocalDateTime();
+                    User user = new User(id, firstName, lastName, new ArrayList<>(), email, createdDate);
+                    list.add(user);
+                    ptr = user;
+                }
+                int rid = res.getInt("RoleId");
+                String rname = res.getString("RoleName");
+                ptr.getRoles().add(new Role(rid, rname));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+    
     public boolean register(String firstName, String lastName, String email, String password) {
         String sp = "{call spUser_Register(?, ?, ?, ?, ?)}";
         boolean success = false;
@@ -123,6 +153,18 @@ public class UserDataAccess {
             statement.setString("NewPassword", dbPassword);
             statement.execute();
         } catch (SQLException | NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    public void updateRoles(int userId, List<String> roleIds) {
+        String rolesParam = String.join(",", roleIds);
+        String sp = "{call spUser_UpdateRoles(?, ?)}";
+        try (CallableStatement statement = DataAccess.getConnection(props).prepareCall(sp)) {
+            statement.setInt("Id", userId);
+            statement.setString("RoleIds", rolesParam);
+            statement.execute();
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }
