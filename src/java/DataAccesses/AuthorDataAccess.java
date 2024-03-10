@@ -44,6 +44,27 @@ public class AuthorDataAccess {
         return authors;
     }
     
+    public Author getById(int authorId) {
+        String sp = "{call spAuthor_GetById(?)}";
+        Author author = null;
+        try (CallableStatement statement = DataAccess.getConnection(props).prepareCall(sp)) {
+            statement.setInt("Id", authorId);
+            statement.execute();
+            ResultSet res = statement.getResultSet();
+            while (res.next()) {
+                int id = res.getInt("Id");
+                String name = res.getString("Name");
+                String description = res.getString("Description");
+                String imagePath = res.getString("ImagePath");
+                author = new Author(id, name, imagePath, description);
+                break;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return author;
+    }
+    
     public List<AuthorOfBook> getAuthorsOfBook(int bookId) {
         List<AuthorOfBook> list = new ArrayList<>();
         String sp = "{call spBook_GetAuthors(?)}";

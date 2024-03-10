@@ -88,6 +88,10 @@
         <servlet-name>DeleteProductController</servlet-name>
         <servlet-class>Controllers.Admin.DeleteProductController</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>UserController</servlet-name>
+        <servlet-class>Controllers.UserController</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>BookController</servlet-name>
         <url-pattern>/Product/Book</url-pattern>
@@ -155,5 +159,9 @@
     <servlet-mapping>
         <servlet-name>DeleteProductController</servlet-name>
         <url-pattern>/Admin/Product/Delete</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>UserController</servlet-name>
+        <url-pattern>/User</url-pattern>
     </servlet-mapping>
 </web-app>

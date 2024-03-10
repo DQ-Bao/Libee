@@ -13,7 +13,6 @@ import java.util.ArrayList;
 public class ProductDataAccess {
     private static ProductDataAccess INSTANCE;
     private DBProps props;
-    private List<Product> cache;
     
     public static ProductDataAccess getInstance(DBProps props) {
         if (INSTANCE == null) {
@@ -24,16 +23,6 @@ public class ProductDataAccess {
     
     private ProductDataAccess(DBProps props) {
         this.props = props;
-        this.cache = new ArrayList<>();
-    }
-    
-    private Product searchCacheById(int productId) {
-        for (int i = 0; i < cache.size(); i++) {
-            if (cache.get(i).getId() == productId) {
-                return cache.get(i);
-            }
-        }
-        return null;
     }
     
     public List<Product> getAll() {
@@ -59,10 +48,7 @@ public class ProductDataAccess {
     }
     
     public Product getById(int productId) {
-        Product product = searchCacheById(productId);
-        if (product != null) {
-            return product;
-        }
+        Product product = null;
         String sp = "{call spProduct_GetById(?)}";
         try (CallableStatement statement = DataAccess.getConnection(props).prepareCall(sp)) {
             statement.setInt("ProductId", productId);
@@ -103,7 +89,30 @@ public class ProductDataAccess {
                 int quantityInStock = res.getInt("QuantityInStock");
                 String imagePath = res.getString("ImagePath");
                 list.add(new Product(id, name, price, description, new Category(cid, cname), quantityInStock, imagePath));
-                cache.add(new Product(id, name, price, description, new Category(cid, cname), quantityInStock, imagePath));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+    
+    public List<Product> getAllProductByAuthor(int authorId) {
+        List<Product> list = new ArrayList<>();
+        String sp = "{call spAuthor_GetBooks(?)}";
+        try (CallableStatement statement = DataAccess.getConnection(props).prepareCall(sp)) {
+            statement.setInt("AuthorId", authorId);
+            statement.execute();
+            ResultSet res = statement.getResultSet();
+            while (res.next()) {
+                int id = res.getInt("Id");
+                String name = res.getString("Name");
+                double price = res.getDouble("Price");
+                String description = res.getString("Description");
+                int cid = res.getInt("CategoryId");
+                String cname = res.getString("CategoryName");
+                int quantityInStock = res.getInt("QuantityInStock");
+                String imagePath = res.getString("ImagePath");
+                list.add(new Product(id, name, price, description, new Category(cid, cname), quantityInStock, imagePath));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -123,7 +132,6 @@ public class ProductDataAccess {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        cache.clear();
     }
     
     public void updateOne(Product product) {
@@ -139,7 +147,6 @@ public class ProductDataAccess {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        cache.clear();
     }
     
     public void deleteOne(int productId) {
@@ -150,6 +157,5 @@ public class ProductDataAccess {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        cache.clear();
     }
 }

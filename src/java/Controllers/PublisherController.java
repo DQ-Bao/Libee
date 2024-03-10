@@ -1,5 +1,6 @@
 package Controllers;
 
+import Annotations.Authorize;
 import Models.Publisher;
 import DataAccesses.Internal.DBProps;
 import DataAccesses.PublisherDataAccess;
@@ -20,6 +21,7 @@ public class PublisherController extends HttpServlet {
     }
     
     @Override
+    @Authorize({"Admin"})
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) 
             throws ServletException, IOException {
         String action = req.getParameter("action");
@@ -31,6 +33,6 @@ public class PublisherController extends HttpServlet {
             String name = req.getParameter("publisher-name");
             publisherDAO.addOne(Publisher.getBuilder().Name(name).Build());
         }
-        resp.sendRedirect(req.getContextPath() + "/Admin");
+        resp.sendRedirect(req.getContextPath() + "/Admin/Product");
     }
 }

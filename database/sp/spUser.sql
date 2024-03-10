@@ -42,3 +42,30 @@ begin
 		select @Success = 0;
 	end
 end
+go
+
+create or alter procedure spUser_GetById
+	@Id int
+as
+begin
+	select [Id], [FirstName], [LastName], [Email], [CreatedDate], [Password] 
+	from [User] 
+	where [Id] = @Id;
+end
+go
+
+create or alter procedure spUser_ChangePassword
+	@Id int,
+	@NewPassword char(69)
+as
+begin
+	update [User] set [Password] = @NewPassword where [Id] = @Id;
+end
+go
+
+create or alter procedure spUser_DeleteAccount
+	@Id int
+as
+begin
+	delete from [User] where [Id] = @Id;
+end

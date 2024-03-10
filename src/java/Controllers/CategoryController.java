@@ -39,6 +39,6 @@ public class CategoryController extends HttpServlet {
             int parentId = Integer.parseInt(req.getParameter("subCategory-parentId"));
             categoryDAO.addOneSubCategory(SubCategory.getBuilder().Name(name).ParentId(parentId).Build());
         }
-        resp.sendRedirect(req.getContextPath() + "/Admin");
+        resp.sendRedirect(req.getContextPath() + "/Admin/Product");
     }
 }

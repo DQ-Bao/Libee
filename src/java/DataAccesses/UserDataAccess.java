@@ -92,6 +92,51 @@ public class UserDataAccess {
         return user;
     }
     
+    public boolean checkPassword(int userId, String password) {
+        String sp = "{call spUser_GetById(?)}";
+        try (CallableStatement statement = DataAccess.getConnection(props).prepareCall(sp)) {
+            statement.setInt("Id", userId);
+            statement.execute();
+            ResultSet res = statement.getResultSet();
+            while (res.next()) {
+                String dbPassword = res.getString("Password");
+                String[] hashSalt = dbPassword.split(":");
+                String storedHash = hashSalt[0];
+                byte[] salt = Base64.getDecoder().decode(hashSalt[1]);
+                String hash = hashPassword(password, salt);
+                if (hash.equals(storedHash)) return true;
+                break;
+            }
+        } catch (SQLException | NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+    
+    public void changePassword(int userId, String newPassword) {
+        String sp = "{call spUser_ChangePassword(?, ?)}";
+        try (CallableStatement statement = DataAccess.getConnection(props).prepareCall(sp)) {
+            statement.setInt("Id", userId);
+            byte[] salt = generateSalt();
+            String hash = hashPassword(newPassword, salt);
+            String dbPassword = hash + ":" + Base64.getEncoder().encodeToString(salt);
+            statement.setString("NewPassword", dbPassword);
+            statement.execute();
+        } catch (SQLException | NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    public void deleteAccount(int userId) {
+        String sp = "{call spUser_DeleteAccount(?)}";
+        try (CallableStatement statement = DataAccess.getConnection(props).prepareCall(sp)) {
+            statement.setInt("Id", userId);
+            statement.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    
     private byte[] generateSalt() {
         byte[] salt = new byte[16];
         new SecureRandom().nextBytes(salt);

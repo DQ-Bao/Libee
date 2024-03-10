@@ -114,7 +114,7 @@
                                         <div class="nav-item dropdown">
                                             <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">${sessionScope.user.firstName} ${sessionScope.user.lastName}</a>
                                             <div class="dropdown-menu rounded-0 m-0">
-                                                <a href="${pageContext.request.contextPath}/User?id=${sessionScope.user.id}" class="dropdown-item">Account</a>
+                                                <a href="${pageContext.request.contextPath}/User" class="dropdown-item">Account</a>
                                                 <a href="${pageContext.request.contextPath}/Logout" class="dropdown-item">Logout</a>
                                             </div>
                                         </div>

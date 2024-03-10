@@ -2,9 +2,12 @@ package Controllers;
 
 import Annotations.Authorize;
 import Models.Author;
+import Models.Product;
 import DataAccesses.AuthorDataAccess;
 import DataAccesses.Internal.DBProps;
+import DataAccesses.ProductDataAccess;
 import Utils.ImageUtils;
+import java.util.List;
 import java.io.IOException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
@@ -17,13 +20,27 @@ import jakarta.servlet.http.Part;
 public class AuthorController extends HttpServlet {
     private static String IMAGE_LOCATION;
     private AuthorDataAccess authorDAO;
+    private ProductDataAccess productDAO;
 
     @Override
     public void init() throws ServletException {
         String driverName = getServletContext().getInitParameter("db-driver");
         String connectionString = getServletContext().getInitParameter("db-connection-string");
-        this.authorDAO = AuthorDataAccess.getInstance(new DBProps(driverName, connectionString));
+        DBProps props = new DBProps(driverName, connectionString);
+        this.authorDAO = AuthorDataAccess.getInstance(props);
+        this.productDAO = ProductDataAccess.getInstance(props);
         IMAGE_LOCATION = getServletContext().getInitParameter("image-location");
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) 
+            throws ServletException, IOException {
+        int authorId = Integer.parseInt(req.getParameter("id"));
+        Author author = authorDAO.getById(authorId);
+        List<Product> productList = productDAO.getAllProductByAuthor(authorId);
+        req.setAttribute("author", author);
+        req.setAttribute("productList", productList);
+        req.getRequestDispatcher("/WEB-INF/Views/Author.jsp").forward(req, resp);
     }
     
     @Override
@@ -50,6 +67,6 @@ public class AuthorController extends HttpServlet {
                     .ImagePath(imageName)
                     .Build());
         }
-        resp.sendRedirect(req.getContextPath() + "/Admin");
+        resp.sendRedirect(req.getContextPath() + "/Admin/Product");
     }
 }
