@@ -13,7 +13,7 @@
             <!-- Sidebar End -->
             <div class="col-lg-9 col-md-12">
                 <div class="row pb-3">
-                    <c:forEach items="${product_list}" var="p">
+                    <c:forEach items="${productList}" var="p">
                         <div class="col-lg-4 col-md-6 col-sm-12 pb-1">
                             <t:productCard id="${p.id}" type="${p.category.name}" name="${p.name}" price="${p.price}" imgPath="${p.imagePath}"/>
                         </div>

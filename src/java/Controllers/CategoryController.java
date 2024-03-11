@@ -10,6 +10,9 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class CategoryController extends HttpServlet {
     private CategoryDataAccess categoryDAO;
@@ -33,12 +36,22 @@ public class CategoryController extends HttpServlet {
         if (action.equals("add-category")) {
             String name = req.getParameter("category-name");
             categoryDAO.addOneCategory(Category.getBuilder().Name(name).Build());
+            updateNavCategories();
         }
         else if (action.equals("add-subCategory")) {
             String name = req.getParameter("subCategory-name");
             int parentId = Integer.parseInt(req.getParameter("subCategory-parentId"));
             categoryDAO.addOneSubCategory(SubCategory.getBuilder().Name(name).ParentId(parentId).Build());
+            updateNavCategories();
         }
         resp.sendRedirect(req.getContextPath() + "/Admin/Product");
+    }
+    
+    private void updateNavCategories() {
+        Map<String, List<SubCategory>> map = new HashMap<>();
+        for (Category c : categoryDAO.getAllCategories()) {
+            map.put(c.getName(), categoryDAO.getSubCategories(c.getName()));
+        }
+        getServletContext().setAttribute("navCatMap", map);
     }
 }

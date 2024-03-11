@@ -30,7 +30,7 @@
                     </a>
                 </div>
                 <div class="col-lg-6 col-6 text-left">
-                    <form action="${pageContext.request.contextPath}/Search" method="post">
+                    <form action="${pageContext.request.contextPath}/Product" method="post">
                         <div class="input-group">
                             <input type="hidden" name="form-action" value="search-product">
                             <input type="text" name="search-text" class="form-control" placeholder="Search for products">
@@ -61,23 +61,23 @@
                     </a>
                     <nav class="collapse position-absolute navbar navbar-vertical navbar-light align-items-start p-0 border border-top-0 border-bottom-0 bg-light" id="navbar-vertical" style="width: calc(100% - 30px); z-index: 100;">
                         <div class="navbar-nav w-100">
-                            <div class="nav-item dropdown">
-                                <a href="#" class="nav-link" data-toggle="dropdown">Dresses <i class="fa fa-angle-down float-right mt-1"></i></a>
-                                <div class="dropdown-menu bg-secondary border-0 rounded-0 w-100 m-0">
-                                    <a href="" class="dropdown-item">Men's Dresses</a>
-                                    <a href="" class="dropdown-item">Women's Dresses</a>
-                                    <a href="" class="dropdown-item">Baby's Dresses</a>
-                                </div>
-                            </div>
-                            <a href="" class="nav-item nav-link">Shirts</a>
-                            <a href="" class="nav-item nav-link">Jeans</a>
-                            <a href="" class="nav-item nav-link">Swimwear</a>
-                            <a href="" class="nav-item nav-link">Sleepwear</a>
-                            <a href="" class="nav-item nav-link">Sportswear</a>
-                            <a href="" class="nav-item nav-link">Jumpsuits</a>
-                            <a href="" class="nav-item nav-link">Blazers</a>
-                            <a href="" class="nav-item nav-link">Jackets</a>
-                            <a href="" class="nav-item nav-link">Shoes</a>
+                            <c:forEach items="${navCatMap}" var="entry">
+                                <c:choose>
+                                    <c:when test="${entry.value.size() le 0}">
+                                        <a href="${pageContext.request.contextPath}/Product/${entry.key}" class="nav-item nav-link">${entry.key}</a>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <div class="nav-item dropdown">
+                                            <a href="#" class="nav-link" data-toggle="dropdown">${entry.key} <i class="fa fa-angle-down float-right mt-1"></i></a>
+                                            <div class="dropdown-menu bg-secondary border-0 rounded-0 w-100 m-0">
+                                                <c:forEach items="${entry.value}" var="sc">
+                                                    <a href="${pageContext.request.contextPath}/Product/${entry.key}/${sc.name}" class="dropdown-item">${sc.name}</a>
+                                                </c:forEach>
+                                            </div>
+                                        </div>
+                                    </c:otherwise>
+                                </c:choose>
+                            </c:forEach>
                         </div>
                     </nav>
                 </div>

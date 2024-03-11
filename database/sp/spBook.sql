@@ -48,6 +48,32 @@ begin
 end
 go
 
+create or alter procedure spBook_GetAllOfGenre
+	@SubCategoryName nvarchar(100)
+as
+begin
+	select p.*, c.[Name] as CategoryName, b.*, pub.[Name] as PublisherName,
+	a.[Id] as AuthorId, a.[Name] as AuthorName, a.[Description] as AuthorDescription, a.[ImagePath] as AuthorImagePath,
+	sc.[Id] as SubCategoryId, sc.[Name] as SubCategoryName, bhsc.[Primary] as SubCategoryPrimary
+	from Product as p
+	join Category as c on p.[CategoryId] = c.[Id]
+	join Book as b on p.[Id] = b.[ProductId]
+	join PUblisher as pub on b.[PublisherId] = pub.[Id]
+	join AuthorOfBook as aob on b.[ProductId] = aob.[BookId]
+	join Author as a on aob.[AuthorId] = a.[Id]
+	join BookHasSubCategory as bhsc on b.[ProductId] = bhsc.[BookId]
+	join SubCategory as sc on bhsc.[SubCategoryId] = sc.[Id]
+	where p.[Id] in (
+		select b.[ProductId] 
+		from Book as b 
+		join BookHasSubCategory as bhsc on b.[ProductId] = bhsc.[BookId]
+		join SubCategory as sc on bhsc.[SubCategoryId] = sc.[Id]
+		where sc.[Name] = @SubCategoryName
+	)
+	order by p.[Id], AuthorId, SubCategoryId asc;
+end
+go
+
 create or alter procedure spBook_AddOne
 	@Name nvarchar(100),
 	@Price decimal(19, 4),

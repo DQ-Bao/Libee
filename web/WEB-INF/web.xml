@@ -12,6 +12,9 @@
         <param-name>image-location</param-name>
         <param-value>D:/Uni/SP24/PRJ301/Projects/Libee/database/files/images</param-value>
     </context-param>
+    <listener>
+        <listener-class>Listeners.CategoryListener</listener-class>
+    </listener>
     <filter>
         <filter-name>AuthorizationFilter</filter-name>
         <filter-class>Filters.AuthorizationFilter</filter-class>
@@ -94,7 +97,7 @@
     </servlet>
     <servlet-mapping>
         <servlet-name>BookController</servlet-name>
-        <url-pattern>/Product/Book</url-pattern>
+        <url-pattern>/Product/Book/*</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>AuthorController</servlet-name>

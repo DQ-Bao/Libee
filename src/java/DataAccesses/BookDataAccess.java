@@ -8,12 +8,16 @@ import Models.Publisher;
 import Models.Category;
 import DataAccesses.Internal.DataAccess;
 import DataAccesses.Internal.DBProps;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.time.LocalDateTime;
 import java.sql.CallableStatement;
 import java.sql.ResultSet;
 import java.sql.Timestamp;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 public class BookDataAccess {
     private static BookDataAccess INSTANCE = null;
@@ -117,6 +121,70 @@ public class BookDataAccess {
             e.printStackTrace();
         }
         return book;
+    }
+    
+    public List<Book> getAllOfGenre(String subCategoryName) {
+        List<BookBuilder> builders = new ArrayList<>();
+        String sp = "{call spBook_GetAllOfGenre(?)}";
+        try (CallableStatement statement = DataAccess.getConnection(props).prepareCall(sp)) {
+            statement.setString("SubCategoryName", subCategoryName);
+            statement.execute();
+            ResultSet res = statement.getResultSet();
+            Set<Integer> bookSet = new HashSet<>();
+            Set<Integer> authorSet = new HashSet<>();
+            Set<Integer> genreSet = new HashSet<>();
+            BookBuilder ptr = null;
+            while (res.next()) {
+                int id = res.getInt("Id");
+                if (bookSet.add(id)) {
+                    BookBuilder builder = Book
+                                        .getBuilder()
+                                        .Id(id)
+                                        .Name(res.getString("Name"))
+                                        .Price(res.getDouble("Price"))
+                                        .Description(res.getString("Description"))
+                                        .Category(Category
+                                                .getBuilder()
+                                                .Id(res.getInt("CategoryId"))
+                                                .Name(res.getString("CategoryName")))
+                                        .QuantityInStock(res.getInt("QuantityInStock"))
+                                        .ImagePath(res.getString("ImagePath"))
+                                        .ISBN10(res.getString("ISBN10"))
+                                        .ISBN13(res.getString("ISBN13"))
+                                        .Language(res.getString("Language"))
+                                        .Publisher(Publisher
+                                                .getBuilder()
+                                                .Id(res.getInt("PublisherId"))
+                                                .Name(res.getString("PublisherName")))
+                                        .PublicationDate(res.getTimestamp("PublicationDate").toLocalDateTime());
+                    builders.add(builder);
+                    ptr = builder;
+                }
+                int authorId = res.getInt("AuthorId");
+                if (authorSet.add(authorId)) {
+                    ptr.Author(AuthorOfBook
+                            .getBuilder()
+                            .BookId(id)
+                            .AuthorId(authorId)
+                            .AuthorName(res.getString("AuthorName"))
+                            .AuthorDescription(res.getString("AuthorDescription"))
+                            .AuthorImagePath(res.getString("AuthorImagePath")));
+                }
+                int genreId = res.getInt("SubCategoryId");
+                if (genreSet.add(genreId)) {
+                    ptr.Genre(SubCategoryOfBook
+                            .getBuilder()
+                            .BookId(id)
+                            .SubCategoryId(genreId)
+                            .SubCategoryName(res.getString("SubCategoryName"))
+                            .Primary(res.getBoolean("SubCategoryPrimary")));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        return builders.stream().map(builder -> builder.Build()).toList();
     }
     
     public void addOne(Book book) {
