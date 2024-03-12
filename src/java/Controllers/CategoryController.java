@@ -28,20 +28,45 @@ public class CategoryController extends HttpServlet {
     @Authorize({"Admin"})
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) 
             throws ServletException, IOException {
-        String action = req.getParameter("action");
+        String action = req.getParameter("form-action");
         if (action == null) {
             resp.sendError(400);
             return;
         }
         if (action.equals("add-category")) {
-            String name = req.getParameter("category-name");
+            String name = req.getParameter("add-category-name");
             categoryDAO.addOneCategory(Category.getBuilder().Name(name).Build());
             updateNavCategories();
         }
         else if (action.equals("add-subCategory")) {
-            String name = req.getParameter("subCategory-name");
-            int parentId = Integer.parseInt(req.getParameter("subCategory-parentId"));
+            String name = req.getParameter("add-subCategory-name");
+            int parentId = Integer.parseInt(req.getParameter("add-subCategory-parentId"));
             categoryDAO.addOneSubCategory(SubCategory.getBuilder().Name(name).ParentId(parentId).Build());
+            updateNavCategories();
+        }
+        else if (action.equals("change-category")) {
+            int id = Integer.parseInt(req.getParameter("change-category-id"));
+            String act = req.getParameter("action");
+            if (act.equals("update")) {
+                String name = req.getParameter("update-category-name");
+                categoryDAO.updateOneCategory(new Category(id, name));
+            }
+            else if (act.equals("delete")) {
+                categoryDAO.deleteOneCategory(id);
+            }
+            updateNavCategories();
+        }
+        else if (action.equals("change-subCategory")) {
+            int id = Integer.parseInt(req.getParameter("change-subCategory-id"));
+            String act = req.getParameter("action");
+            if (act.equals("update")) {
+                String name = req.getParameter("update-subCategory-name");
+                int parentId = Integer.parseInt(req.getParameter("update-subCategory-parentId"));
+                categoryDAO.updateOneSubCategory(new SubCategory(id, name, parentId));
+            }
+            else if (act.equals("delete")) {
+                categoryDAO.deleteOneSubCategory(id);
+            }
             updateNavCategories();
         }
         resp.sendRedirect(req.getContextPath() + "/Admin/Product");

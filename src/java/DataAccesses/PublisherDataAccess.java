@@ -61,34 +61,24 @@ public class PublisherDataAccess {
         return pub;
     }
     
-    public boolean updateOne(Publisher pub) {
-        String sql = "update Publisher set [Name] = ? where [Id] = ?;";
-        boolean success = false;
-        try (Connection conn = DataAccess.getConnection(props);
-            PreparedStatement statement = conn.prepareStatement(sql)) {
-            statement.setString(1, pub.getName());
-            statement.setInt(2, pub.getId());
-            if (statement.executeUpdate() == 1) {
-                success = true;
-            }
+    public void updateOne(Publisher pub) {
+        String sp = "{call spPublisher_UpdateOne(?, ?)}";
+        try (CallableStatement statement = DataAccess.getConnection(props).prepareCall(sp)) {
+            statement.setInt("Id", pub.getId());
+            statement.setString("Name", pub.getName());
+            statement.execute();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return success;
     }
-    public boolean deleteOne(int pubId) {
-        String sql = "delete from Publisher where [Id] = ?;";
-        boolean success = false;
-        try (Connection conn = DataAccess.getConnection(props);
-            PreparedStatement statement = conn.prepareStatement(sql)) {
-            statement.setInt(1, pubId);
-            if (statement.executeUpdate() == 1) {
-                success = true;
-            }
+    public void deleteOne(int pubId) {
+        String sp = "{call spPublisher_DeleteOne(?)}";
+        try (CallableStatement statement = DataAccess.getConnection(props).prepareCall(sp)) {
+            statement.setInt("Id", pubId);
+            statement.execute();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return success;
     }
     
     public void addOne(Publisher publisher) {

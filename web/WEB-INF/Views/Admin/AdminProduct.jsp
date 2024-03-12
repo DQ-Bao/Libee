@@ -18,6 +18,17 @@
                     categoryNameHiddenField.setAttribute("value", cname);
                 }
             }
+            function showChildSubCategories(option) {
+                const childs = document.getElementById("subCategory-id").options;
+                for (let i = 0; i < childs.length; i++) {
+                    if (childs[i].getAttribute('title') === option.value) {
+                        childs[i].style.display = "";
+                    }
+                    else {
+                        childs[i].style.display = "none";
+                    }
+                }
+            }
         </script>
     </jsp:attribute>
     <jsp:body>

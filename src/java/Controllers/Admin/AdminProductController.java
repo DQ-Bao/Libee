@@ -61,6 +61,7 @@ public class AdminProductController extends HttpServlet {
             }
         }
         req.setAttribute("categories", categoryDAO.getAllCategories());
+        req.setAttribute("subCategories", categoryDAO.getAllSubCategories());
         req.setAttribute("genres", categoryDAO.getSubCategories("Book"));
         req.setAttribute("publishers", publisherDAO.getAll());
         req.setAttribute("authors", authorDAO.getAll());

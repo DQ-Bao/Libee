@@ -45,6 +45,24 @@ public class CategoryDataAccess {
         return categories;
     }
     
+    public List<SubCategory> getAllSubCategories() {
+        String sp = "{call spCategory_GetAllSubCategories}";
+        List<SubCategory> subCategories = new ArrayList<>();
+        try (CallableStatement statement = DataAccess.getConnection(props).prepareCall(sp)) {
+            statement.execute();
+            ResultSet res = statement.getResultSet();
+            while (res.next()) {
+                int id = res.getInt("Id");
+                String name = res.getString("Name");
+                int parentId = res.getInt("CategoryId");
+                subCategories.add(new SubCategory(id, name, parentId));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return subCategories;
+    }
+    
     public List<SubCategory> getSubCategories(String categoryName) {
         String sp = "{call spCategory_GetSubCategories(?)}";
         List<SubCategory> subCategories = new ArrayList<>();
@@ -100,42 +118,32 @@ public class CategoryDataAccess {
         }
         return cate;
     }
-    
-    public boolean updateOne(Category cate) {
-        String sql = "update Category set [Name] = ? where [Id] = ?;";
-        boolean success = false;
-        try (Connection conn = DataAccess.getConnection(props);
-            PreparedStatement statement = conn.prepareStatement(sql)) {
-            statement.setString(1, cate.getName());
-            statement.setInt(2, cate.getId());
-            if (statement.executeUpdate() == 1) {
-                success = true;
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return success;
-    }
-    
-    public boolean deleteOne(int cateId) {
-        String sql = "delete from Category where [Id] = ?;";
-        boolean success = false;
-        try (Connection conn = DataAccess.getConnection(props);
-            PreparedStatement statement = conn.prepareStatement(sql)) {
-            statement.setInt(1, cateId);
-            if (statement.executeUpdate() == 1) {
-                success = true;
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return success;
-    }
 
     public void addOneCategory(Category category) {
         String sp = "{call spCategory_AddOne(?)}";
         try (CallableStatement statement = DataAccess.getConnection(props).prepareCall(sp)) {
             statement.setString("Name", category.getName());
+            statement.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    public void updateOneCategory(Category category) {
+        String sp = "{call spCategory_UpdateOne(?, ?)}";
+        try (CallableStatement statement = DataAccess.getConnection(props).prepareCall(sp)) {
+            statement.setInt("Id", category.getId());
+            statement.setString("Name", category.getName());
+            statement.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    public void deleteOneCategory(int categoryId) {
+        String sp = "{call spCategory_DeleteOne(?)}";
+        try (CallableStatement statement = DataAccess.getConnection(props).prepareCall(sp)) {
+            statement.setInt("Id", categoryId);
             statement.execute();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -147,6 +155,28 @@ public class CategoryDataAccess {
         try (CallableStatement statement = DataAccess.getConnection(props).prepareCall(sp)) {
             statement.setString("Name", subCategory.getName());
             statement.setInt("CategoryId", subCategory.getParentId());
+            statement.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    public void updateOneSubCategory(SubCategory subCategory) {
+        String sp = "{call spSubCategory_UpdateOne(?, ?, ?)}";
+        try (CallableStatement statement = DataAccess.getConnection(props).prepareCall(sp)) {
+            statement.setInt("Id", subCategory.getId());
+            statement.setString("Name", subCategory.getName());
+            statement.setInt("CategoryId", subCategory.getParentId());
+            statement.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    public void deleteOneSubCategory(int subCategoryId) {
+        String sp = "{call spSubCategory_DeleteOne(?)}";
+        try (CallableStatement statement = DataAccess.getConnection(props).prepareCall(sp)) {
+            statement.setInt("Id", subCategoryId);
             statement.execute();
         } catch (SQLException e) {
             e.printStackTrace();

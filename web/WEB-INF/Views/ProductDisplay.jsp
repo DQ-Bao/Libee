@@ -8,7 +8,7 @@
         <div class="row px-xl-5">
             <!-- Sidebar Start -->
             <div class="col-lg-3 col-md-12">
-                <t:productFilter/>
+                
             </div>
             <!-- Sidebar End -->
             <div class="col-lg-9 col-md-12">
